@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Royal Seed Chapel ERP</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    .bg-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+      object-fit: cover;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+
+    header {
+      padding: 20px;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.6);
+      position: relative;
+      z-index: 2;
+    }
+
+    header h1 {
+      font-size: 3em;
+      font-weight: 900;
+      background: linear-gradient(to right, #ffcc00, #ff3366, #00ccff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+      animation: pop 1s ease-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    nav a {
+      color: #fff;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s ease;
+    }
+
+    nav a:hover {
+      color: #00ffcc;
+    }
+
+    main {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 80vh;
+      text-align: center;
+      z-index: 2;
+      position: relative;
+    }
+
+    main h2 {
+      font-size: 2em;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 6px rgba(0,0,0,0.7);
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 12px 30px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 30px;
+      background: linear-gradient(to right, #00ffcc, #0099ff);
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 20px rgba(0, 255, 204, 0.3);
+    }
+
+    .member-check {
+      display: none;
+      margin-top: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 400px;
+      width: 90%;
+      color: white;
+    }
+
+    .member-check input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 1em;
+    }
+
+    .member-check button {
+      background: #00cc99;
+      color: white;
+      padding: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .member-check button:hover {
+      background: #00b88a;
+    }
+
+    #checkStatus {
+      color: yellow;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    footer {
+      position: relative;
+      bottom: 0;
+      width: 100%;
+      text-align: center;
+      color: #ccc;
+      font-size: 0.9em;
+      z-index: 2;
+      padding: 10px 0;
+      background: rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <video autoplay muted loop class="bg-video">
+    <source src="royal1.mp4" type="video/mp4">
+  </video>
+
+  <div class="overlay"></div>
+
+  <header>
+    <h1>Royal Seed Chapel International</h1>
+    <nav>
+      <a href="royal.html">Home</a>
+      <a href="join.html">Join Us</a>
+      <a href="request-prayer.html">Prayer</a>
+      <a href="pictures.html">Gallery</a>
+      <a href="contacts.html">Contacts</a>
+      <a href="services.html">Services</a>
+      <a href="admin/login.html">Admin login</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Welcome to Royal Seed Chapel</h2>
+    <p>Experience the love of Christ and be part of a growing church family.</p>
+    <a href="join.html" class="btn">Join Us</a>
+
+    <button class="btn" onclick="document.getElementById('memberBox').style.display='block'">Already a Member</button>
+
+    <!-- Verification Form -->
+    <div id="memberBox" class="member-check">
+      <h3>Verify Your Details</h3>
+      <input type="text" id="checkName" placeholder="Enter your full name">
+      <input type="text" id="checkPhone" placeholder="Enter your phone number">
+      <button onclick="verifyMember()">Continue</button>
+      <p id="checkStatus"></p>
+    </div>
+  </main>
+
+  <script>
+    async function verifyMember() {
+      const name = document.getElementById('checkName').value.trim().toLowerCase();
+      const phone = document.getElementById('checkPhone').value.trim();
+
+      if (!name || !phone) {
+        document.getElementById('checkStatus').innerText = 'Please enter both name and phone number.';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/members/phone/${phone}`);
+        const data = await res.json();
+
+        if (res.ok && data.name && data.name.trim().toLowerCase() === name) {
+          localStorage.setItem('newMemberName', data.name);
+          window.location.href = 'welcome.html';
+        } else {
+          document.getElementById('checkStatus').innerText = 'No match found. Please register.';
+          setTimeout(() => window.location.href = 'join.html', 3000);
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('checkStatus').innerText = 'Error contacting server.';
+      }
+    }
+  </script>
+
+  <footer>&copy; 2025 Royal Seed Chapel International</footer>
+
+</body>
+</html>

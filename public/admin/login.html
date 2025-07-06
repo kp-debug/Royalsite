@@ -1,0 +1,101 @@
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: url('backgroun3.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    height: 100vh;
+    justify-content: center;
+    margin: 0;
+    backdrop-filter: brightness(0.5);
+  }
+
+  h1 {
+    color: #FFD700;
+    text-shadow: 2px 2px 5px black;
+  }
+
+  form {
+    background: rgba(0, 0, 0, 0.75);
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    box-shadow: 0 0 15px #000;
+  }
+
+  input, button {
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+  }
+
+  input {
+    background: #333;
+    color: white;
+  }
+
+  button {
+    background: #FFD700;
+    color: black;
+    cursor: pointer;
+  }
+
+  .message {
+    margin-top: 20px;
+    color: red;
+  }
+</style>
+
+</head>
+<body>
+  <h1>Admin Login</h1>
+  <form id="loginForm">
+    <input type="text" name="username" placeholder="Username" required />
+    <input type="password" name="password" placeholder="Password" required />
+    <button type="submit">Login</button>
+  </form>
+  <div class="message" id="message"></div>
+
+  <script>
+    const form = document.getElementById('loginForm');
+    const messageDiv = document.getElementById('message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = form.username.value;
+      const password = form.password.value;
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          window.location.href = "/admin/";
+        } else {
+          messageDiv.textContent = data.message;
+        }
+      } catch (err) {
+        messageDiv.textContent = "Something went wrong.";
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>

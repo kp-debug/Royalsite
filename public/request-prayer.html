@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Request a Prayer</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+    }
+
+    video.bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.6);
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .form-container {
+      position: relative;
+      z-index: 1;
+      max-width: 500px;
+      margin: 80px auto;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+      color: #fff;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #FFD700;
+      text-shadow: 2px 2px 4px black;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      margin-top: 5px;
+      font-size: 1rem;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background: #FFD700;
+      color: #111;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #fff;
+      color: #000;
+    }
+
+    .success-message {
+      text-align: center;
+      margin-top: 20px;
+      color: lightgreen;
+      font-weight: bold;
+    }
+
+    .error-message {
+      text-align: center;
+      margin-top: 20px;
+      color: red;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Video -->
+  <video class="bg-video" autoplay muted loop>
+    <source src="prayer.req.mp4" type="video/mp4" />
+    Your browser does not support HTML5 video.
+  </video>
+
+  <div class="overlay"></div>
+
+  <!-- Prayer Request Form -->
+  <div class="form-container">
+    <h2>Request a Prayer</h2>
+    <form id="prayerForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name" />
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required placeholder="Enter your email" />
+
+      <label for="whatsapp">WhatsApp Number</label>
+      <input
+        type="tel"
+        id="whatsapp"
+        name="whatsapp"
+        required
+        placeholder="+233..."
+        pattern="^\+?\d{10,15}$"
+        title="Enter a valid WhatsApp number starting with +233..."
+      />
+
+      <label for="request">Prayer Request</label>
+      <textarea id="request" name="request" required placeholder="What would you like us to pray for?"></textarea>
+
+      <button type="submit">Submit Prayer</button>
+    </form>
+
+    <div class="success-message" id="successMessage"></div>
+    <div class="error-message" id="errorMessage"></div>
+  </div>
+
+  <script>
+    document.getElementById('prayerForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const whatsapp = document.getElementById('whatsapp').value;
+      const request = document.getElementById('request').value;
+
+      try {
+        const response = await fetch('/api/prayer-requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, whatsapp, request })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          document.getElementById('successMessage').innerText = data.message;
+          document.getElementById('errorMessage').innerText = '';
+          document.getElementById('prayerForm').reset();
+        } else {
+          document.getElementById('errorMessage').innerText = data.message || 'Something went wrong.';
+          document.getElementById('successMessage').innerText = '';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('errorMessage').innerText = 'Network error. Please try again.';
+        document.getElementById('successMessage').innerText = '';
+      }
+    });
+  </script>
+
+</body>
+</html>

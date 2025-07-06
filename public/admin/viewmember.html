@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>View Members</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      padding: 30px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #222;
+    }
+
+    #exportBtn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 25px;
+      background: green;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    #birthdaySection {
+      max-width: 600px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    #birthdayList {
+      list-style: none;
+      padding: 0;
+    }
+
+    #birthdayList li {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background: #333;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background: #f9f9f9;
+    }
+
+    .delete-btn {
+      padding: 6px 12px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: darkred;
+    }
+  </style>
+</head>
+<body>
+  <h1>Submitted Members</h1>
+
+  <!-- 🎉 Birthday Section -->
+  <div id="birthdaySection">
+    <h2>🎂 Upcoming Birthdays</h2>
+    <ul id="birthdayList">
+      <li>Loading...</li>
+    </ul>
+  </div>
+
+  <button id="exportBtn">Export CSV</button>
+
+  <table id="membersTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Role</th>
+        <th>Date</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function fetchMembers() {
+      try {
+        const res = await fetch('/api/members');
+        const members = await res.json();
+
+        const tbody = document.querySelector('#membersTable tbody');
+        const birthdayList = document.getElementById('birthdayList');
+        tbody.innerHTML = '';
+        birthdayList.innerHTML = '';
+
+        const today = new Date();
+        const upcoming = [];
+
+        members.forEach(member => {
+          // Table
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${member.name}</td>
+            <td>${member.email || 'N/A'}</td>
+            <td>${member.phone || 'N/A'}</td>
+            <td>${member.role}</td>
+            <td>${new Date(member.createdAt).toLocaleString()}</td>
+            <td><button class="delete-btn" onclick="deleteMember('${member._id}')">Delete</button></td>
+          `;
+          tbody.appendChild(tr);
+
+          // Upcoming Birthday
+          if (member.dob) {
+            const birthDate = new Date(member.dob);
+            birthDate.setFullYear(today.getFullYear()); // Check this year
+
+            const timeDiff = (birthDate - today) / (1000 * 60 * 60 * 24);
+            if (timeDiff >= 0 && timeDiff <= 30) {
+              upcoming.push({
+                name: member.name,
+                date: new Date(member.dob).toDateString()
+              });
+            }
+          }
+        });
+
+        if (upcoming.length === 0) {
+          birthdayList.innerHTML = '<li>No upcoming birthdays in the next 30 days.</li>';
+        } else {
+          upcoming.sort((a, b) => new Date(a.date) - new Date(b.date));
+          upcoming.forEach(b => {
+            const li = document.createElement('li');
+            li.textContent = `${b.name} – ${b.date}`;
+            birthdayList.appendChild(li);
+          });
+        }
+
+      } catch (err) {
+        alert('Failed to load members.');
+        console.error(err);
+      }
+    }
+
+    async function deleteMember(id) {
+      if (confirm('Are you sure you want to delete this member?')) {
+        try {
+          const res = await fetch(`/api/members/${id}`, { method: 'DELETE' });
+          const result = await res.json();
+          alert(result.message);
+          fetchMembers();
+        } catch (err) {
+          alert('Failed to delete member.');
+          console.error(err);
+        }
+      }
+    }
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      window.location.href = '/api/members/export/csv';
+    });
+
+    fetchMembers();
+  </script>
+</body>
+</html>

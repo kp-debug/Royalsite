@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Daily Devotional | Royal Seed Chapel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    video.bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.7);
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .verse-box {
+      position: relative;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 40px;
+      border-radius: 20px;
+      max-width: 700px;
+      margin: 100px auto;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      color: #f0c040;
+      margin-bottom: 30px;
+    }
+
+    blockquote {
+      font-size: 1.5rem;
+      font-style: italic;
+      color: #eee;
+    }
+
+    cite {
+      display: block;
+      margin-top: 15px;
+      color: #ccc;
+      font-weight: bold;
+    }
+
+    .testimony-btn {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 30px;
+      background-color: #f0c040;
+      color: #111;
+      border-radius: 10px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: 0.3s ease;
+    }
+
+    .testimony-btn:hover {
+      background-color: #fff;
+      color: #000;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🎬 Background Video -->
+  <video autoplay muted loop class="bg-video">
+    <source src="e3.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="overlay"></div>
+
+  <div class="verse-box">
+    <h1>📖 Daily Bible Verse</h1>
+    <blockquote id="verseText">Loading...</blockquote>
+    <cite id="verseRef"></cite>
+
+    <a href="submit-testimony.html" class="testimony-btn">✨ Share Your Testimony</a>
+  </div>
+
+  <script>
+    const verses = [
+      { text: "For I know the plans I have for you, declares the Lord.", ref: "Jeremiah 29:11" },
+      { text: "I can do all things through Christ who strengthens me.", ref: "Philippians 4:13" },
+      { text: "The Lord is my shepherd, I shall not want.", ref: "Psalm 23:1" },
+      { text: "Let everything that has breath praise the Lord.", ref: "Psalm 150:6" },
+      { text: "God is our refuge and strength, an ever-present help in trouble.", ref: "Psalm 46:1" }
+    ];
+
+    const today = new Date();
+    const index = today.getDate() % verses.length;
+
+    document.getElementById("verseText").innerText = verses[index].text;
+    document.getElementById("verseRef").innerText = verses[index].ref;
+  </script>
+</body>
+</html>

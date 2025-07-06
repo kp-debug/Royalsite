@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event Details</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #111, #222);
+      color: #fff;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+    }
+
+    h1 {
+      color: #f0c040;
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-top: 10px;
+      color: #ddd;
+    }
+
+    img, video {
+      width: 100%;
+      max-width: 700px;
+      margin-top: 25px;
+      border-radius: 15px;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+    }
+
+    a.back {
+      color: #0af;
+      margin-top: 40px;
+      display: inline-block;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .not-found {
+      font-size: 1.5rem;
+      margin-top: 100px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="eventContainer">
+    <h1>Loading...</h1>
+  </div>
+
+  <a class="back" href="events.html">← Back to Events</a>
+
+  <script>
+    const container = document.getElementById('eventContainer');
+    const API_URL = 'http://localhost:5000/api/events';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const id = urlParams.get("id");
+
+    if (!id) {
+      container.innerHTML = '<p class="not-found">No event ID provided.</p>';
+    } else {
+      fetch(`${API_URL}/${id}`)
+        .then(async res => {
+          if (!res.ok) throw new Error('Not found');
+          const event = await res.json();
+
+          container.innerHTML = `
+            <h1>${event.title}</h1>
+            <p><strong>Date:</strong> ${new Date(event.date).toDateString()}</p>
+            <p><strong>Short Description:</strong> ${event.description || 'N/A'}</p>
+            ${event.flyer ? `<img src="${event.flyer}" alt="Event Flyer">` : ''}
+            <p><strong>Details:</strong> ${event.fullDetails || 'N/A'}</p>
+            ${event.video ? `<video controls><source src="${event.video}" type="video/mp4"></video>` : ''}
+          `;
+        })
+        .catch(err => {
+          console.error(err);
+          container.innerHTML = '<p class="not-found">Event Not Found or Error loading event.</p>';
+        });
+    }
+  </script>
+</body>
+</html>

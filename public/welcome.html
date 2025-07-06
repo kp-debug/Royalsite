@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Welcome to Royal Seed Chapel</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+      color: white;
+    }
+
+    video.bg-video {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      min-width: 100%;
+      min-height: 100%;
+      z-index: -1;
+      object-fit: cover;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.6);
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 700px;
+      margin: 100px auto;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.75);
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.8rem;
+      color: #f0c040;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 5px black;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 30px;
+      color: #ddd;
+    }
+
+    a.button {
+      display: inline-block;
+      padding: 15px 30px;
+      margin: 10px;
+      font-size: 1rem;
+      font-weight: bold;
+      background: linear-gradient(to right, #00ffcc, #0099ff);
+      color: #111;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    a.button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(0, 255, 204, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🎥 Video Background -->
+  <video autoplay muted loop class="bg-video">
+    <source src="joinus.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="overlay"></div>
+
+  <div class="container">
+    <h1>Welcome to Royal Seed Chapel!</h1>
+    <p>Thank you for joining us. Here are some next steps to help you stay connected:</p>
+
+    <a href="events.html" class="button">📅 View Church Events</a>
+    <a href="daily-devotional.html" class="button">📖 Daily Devotion</a>
+    <a href="testimonies.html" class="button">🙏 Read Testimonies</a>
+    <a href="royal.html" class="button">🏠 Go to Homepage</a>
+    <a href="sermonss.html"class="button">view sermons </a>
+    <a href="services.html"class="button">meeting days</a>
+    <a href="pictures.html"class="button">Church gallery </a>
+    <a href="ministry-signup.html"class="button">want to be a worker?</a>
+    <a href="bus-info.html"class="button"> Join Bus?</a>
+  </div>
+
+</body>
+</html>

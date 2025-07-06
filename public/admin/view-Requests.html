@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Prayer Requests - Admin View</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: url('a1.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.75);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #FFD700;
+      margin-bottom: 30px;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    .request-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .request {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      width: 300px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 0 10px #000;
+      position: relative;
+    }
+
+    .request p {
+      margin: 5px 0;
+    }
+
+    .request strong {
+      color: #FFD700;
+    }
+
+    .reply-links {
+      margin-top: 10px;
+    }
+
+    .reply-links a {
+      display: inline-block;
+      margin: 4px 6px;
+      color: #fff;
+      text-decoration: none;
+      background: #28a745;
+      padding: 6px 10px;
+      border-radius: 5px;
+      font-size: 0.85rem;
+    }
+
+    .reply-links a.email {
+      background: #007bff;
+    }
+
+    .delete-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 5px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background: darkred;
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <h1>Prayer Requests</h1>
+    <div class="request-list" id="requestList">
+      <p>Loading prayer requests...</p>
+    </div>
+  </div>
+
+  <script>
+    function loadRequests() {
+      fetch('/api/prayer-requests')
+        .then(res => res.json())
+        .then(data => {
+          const list = document.getElementById('requestList');
+          list.innerHTML = '';
+
+          if (data.length === 0) {
+            list.innerHTML = '<p>No prayer requests found.</p>';
+            return;
+          }
+
+          data.forEach(req => {
+            const div = document.createElement('div');
+            div.className = 'request';
+
+            div.innerHTML = `
+              <p><strong>Name:</strong> ${req.name || 'N/A'}</p>
+              <p><strong>Email:</strong> ${req.email || 'N/A'}</p>
+              <p><strong>WhatsApp:</strong> ${req.whatsapp || 'N/A'}</p>
+              <p><strong>Request:</strong><br>${req.request}</p>
+              <div class="reply-links">
+                ${req.email ? `<a href="mailto:${req.email}" class="email">Reply via Email</a>` : ''}
+                ${req.whatsapp ? `<a href="https://wa.me/${req.whatsapp}" target="_blank">WhatsApp</a>` : ''}
+              </div>
+              <button class="delete-btn" onclick="deleteRequest('${req._id}')">Delete</button>
+            `;
+
+            list.appendChild(div);
+          });
+        })
+        .catch(err => {
+          console.error('Fetch error:', err);
+          document.getElementById('requestList').innerHTML = '<p>Failed to load requests.</p>';
+        });
+    }
+
+    function deleteRequest(id) {
+      if (confirm('Are you sure you want to delete this request?')) {
+        fetch(`/api/prayer-requests/${id}`, {
+          method: 'DELETE'
+        })
+        .then(res => res.json())
+        .then(data => {
+          alert(data.message || 'Deleted');
+          loadRequests();
+        })
+        .catch(err => {
+          console.error('Delete error:', err);
+          alert('Failed to delete prayer request.');
+        });
+      }
+    }
+
+    // Load on page load
+    loadRequests();
+  </script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin | Approve Testimonies</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #111;
+      color: white;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .testimony {
+      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    .testimony h3 {
+      color: #f0c040;
+    }
+
+    .testimony small {
+      color: #aaa;
+    }
+
+    button {
+      margin: 10px 5px 0 0;
+      padding: 8px 15px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .approve { background-color: #4caf50; color: white; }
+    .reject { background-color: #e53935; color: white; }
+    .delete { background-color: #555; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🛡️ Admin Panel – Testimonies</h1>
+    <div id="testimonyList"></div>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api/testimonies';
+
+    async function loadTestimonies() {
+      const res = await fetch(`${API}/all`);
+      const data = await res.json();
+
+      const container = document.getElementById('testimonyList');
+      container.innerHTML = '';
+
+      data.forEach(t => {
+        container.innerHTML += `
+          <div class="testimony">
+            <h3>${t.title}</h3>
+            <small>From: ${t.name} | Status: ${t.status}</small>
+            <p>${t.content}</p>
+            <button class="approve" onclick="updateStatus('${t._id}', 'approved')">✅ Approve</button>
+            <button class="reject" onclick="updateStatus('${t._id}', 'pending')">⏳ Mark Pending</button>
+            <button class="delete" onclick="deleteTestimony('${t._id}')">🗑 Delete</button>
+          </div>
+        `;
+      });
+    }
+
+    async function updateStatus(id, status) {
+      await fetch(`${API}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status })
+      });
+      loadTestimonies();
+    }
+
+    async function deleteTestimony(id) {
+      if (confirm("Delete this testimony?")) {
+        await fetch(`${API}/${id}`, { method: 'DELETE' });
+        loadTestimonies();
+      }
+    }
+
+    loadTestimonies();
+  </script>
+</body>
+</html>

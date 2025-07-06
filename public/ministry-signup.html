@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ministry Sign-Up | Royal Seed Chapel</title>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      overflow: hidden;
+    }
+    video.bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+    .overlay {
+      background: rgba(0, 0, 0, 0.6);
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      z-index: 0;
+    }
+    .form-box {
+      position: relative;
+      z-index: 1;
+      max-width: 500px;
+      margin: 100px auto;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #f0c040;
+    }
+    label {
+      margin-top: 12px;
+      display: block;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background: linear-gradient(to right, #00ffcc, #0099ff);
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <video autoplay muted loop class="bg-video">
+    <source src="joinus.mp4" type="video/mp4" />
+  </video>
+  <div class="overlay"></div>
+
+  <div class="form-box">
+    <h2>Join a Ministry</h2>
+    <form id="ministryForm">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="phone">Phone Number</label>
+      <input type="text" id="phone" name="phone" required>
+
+      <label for="ministry">Ministry</label>
+      <select id="ministry" name="ministry" required>
+        <option value="">Select Ministry</option>
+        <option value="Choir">Choir</option>
+        <option value="Ushering">Ushering</option>
+        <option value="Children’s Service">Children’s Service</option>
+        <option value="Media Team">Media Team</option>
+      </select>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('ministryForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = {
+        name: document.getElementById('name').value,
+        phone: document.getElementById('phone').value,
+        ministry: document.getElementById('ministry').value
+      };
+
+      const res = await fetch('/api/ministries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+
+      if (res.ok) {
+        alert("Ministry form submitted!");
+        this.reset();
+      } else {
+        alert("Something went wrong.");
+      }
+    });
+  </script>
+
+</body>
+</html>

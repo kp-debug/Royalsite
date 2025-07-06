@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin - Manage Bus Stops</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #111;
+      color: #fff;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #f0c040;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 30px auto;
+      background: #222;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #00cc88;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #00aa77;
+    }
+
+    table {
+      width: 100%;
+      max-width: 800px;
+      margin: 30px auto;
+      border-collapse: collapse;
+      background: #222;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+    }
+
+    th {
+      background-color: #333;
+      color: #f0c040;
+    }
+
+    td button {
+      padding: 6px 12px;
+      background: #e74c3c;
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    td button.edit {
+      background: #3498db;
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🚌 Admin: Manage Bus Stops</h1>
+
+  <form id="busForm">
+    <input type="text" id="stop" placeholder="Pickup Location" required>
+    <input type="text" id="time" placeholder="Pickup Time (e.g., 6:30am)" required>
+    <input type="text" id="wait" placeholder="Wait Duration (e.g., 5 mins)" required>
+    <input type="hidden" id="busId"> <!-- For editing -->
+    <button type="submit">Save Stop</button>
+  </form>
+
+  <table id="busTable">
+    <thead>
+      <tr>
+        <th>Stop</th>
+        <th>Time</th>
+        <th>Wait</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Dynamic bus stop list -->
+    </tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('busForm');
+    const busTable = document.querySelector('#busTable tbody');
+
+    function loadStops() {
+      fetch('/api/bus')
+        .then(res => res.json())
+        .then(data => {
+          busTable.innerHTML = '';
+          data.forEach(stop => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${stop.stop}</td>
+              <td>${stop.time}</td>
+              <td>${stop.wait}</td>
+              <td>
+                <button class="edit" onclick="editStop('${stop._id}', '${stop.stop}', '${stop.time}', '${stop.wait}')">Edit</button>
+                <button onclick="deleteStop('${stop._id}')">Delete</button>
+              </td>
+            `;
+            busTable.appendChild(row);
+          });
+        });
+    }
+
+    function editStop(id, stop, time, wait) {
+      document.getElementById('stop').value = stop;
+      document.getElementById('time').value = time;
+      document.getElementById('wait').value = wait;
+      document.getElementById('busId').value = id;
+    }
+
+    async function deleteStop(id) {
+      if (confirm('Are you sure you want to delete this stop?')) {
+        await fetch(`/api/bus/${id}`, { method: 'DELETE' });
+        loadStops();
+      }
+    }
+
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const stop = document.getElementById('stop').value;
+      const time = document.getElementById('time').value;
+      const wait = document.getElementById('wait').value;
+      const busId = document.getElementById('busId').value;
+
+      const data = { stop, time, wait };
+      const url = busId ? `/api/bus/${busId}` : '/api/bus';
+      const method = busId ? 'PUT' : 'POST';
+
+      await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      form.reset();
+      loadStops();
+    });
+
+    // Load on page load
+    loadStops();
+  </script>
+</body>
+</html>

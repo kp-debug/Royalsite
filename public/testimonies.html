@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Testimonies | Royal Seed Chapel</title>
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      overflow-x: hidden;
+      color: white;
+    }
+
+    video.bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      padding: 60px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 30px;
+      text-align: center;
+      color: #f0c040;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    .testimony-card {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(5px);
+    }
+
+    .testimony-card h3 {
+      color: #f0c040;
+    }
+
+    .testimony-card small {
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    .testimony-card p {
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    .back-btn {
+      display: inline-block;
+      text-align: center;
+      margin: 30px auto 0;
+      padding: 12px 25px;
+      background-color: #f0c040;
+      color: #111;
+      font-weight: bold;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <video autoplay muted loop class="bg-video">
+    <source src="e3.mp4" type="video/mp4" />
+  </video>
+
+  <div class="overlay"></div>
+
+  <div class="container">
+    <h1>🙌 Approved Testimonies</h1>
+    <div id="testimonyList">Loading testimonies...</div>
+    <a href="index.html" class="back-btn">← Back to Home</a>
+  </div>
+
+  <script>
+    const API = 'http://localhost:5000/api/testimonies';
+
+    async function loadTestimonies() {
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+
+        const container = document.getElementById('testimonyList');
+        container.innerHTML = '';
+
+        if (data.length === 0) {
+          container.innerHTML = '<p>No testimonies yet. Be the first to share yours!</p>';
+          return;
+        }
+
+        data.forEach(t => {
+          container.innerHTML += `
+            <div class="testimony-card">
+              <h3>${t.title}</h3>
+              <small>Shared by: ${t.name} | ${new Date(t.createdAt).toLocaleDateString()}</small>
+              <p>${t.content}</p>
+            </div>
+          `;
+        });
+      } catch (error) {
+        document.getElementById('testimonyList').innerHTML = '<p>Error loading testimonies.</p>';
+      }
+    }
+
+    loadTestimonies();
+  </script>
+</body>
+</html>

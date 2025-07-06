@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gallery - Royal Seed Chapel International</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a0a0a;
+      color: white;
+    }
+
+    header {
+      padding: 60px 20px 30px;
+      text-align: center;
+      background: linear-gradient(to bottom, #000000, #111);
+    }
+
+    header h1 {
+      font-size: 3rem;
+      color: #FFD700;
+      text-shadow: 2px 2px 8px #000;
+      margin-bottom: 10px;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 30px;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+      background: #1a1a1a;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover {
+      transform: scale(1.03);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      transition: 0.4s ease;
+    }
+
+    .title {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      color: #FFD700;
+      font-weight: bold;
+      font-size: 1rem;
+      text-align: center;
+      backdrop-filter: blur(5px);
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Church Gallery</h1>
+    <p style="color: #ccc;">Moments from our church services & events</p>
+  </header>
+
+  <div class="gallery" id="galleryContainer">
+    <p style="color:white;" id="loading">Loading images...</p>
+  </div>
+
+  <script>
+    fetch('/api/images')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('galleryContainer');
+        container.innerHTML = '';
+
+        if (data.length === 0) {
+          container.innerHTML = '<p style="color:white;">No images uploaded yet.</p>';
+          return;
+        }
+
+        data.forEach(img => {
+          const div = document.createElement('div');
+          div.className = 'gallery-item';
+          div.innerHTML = `
+            <img src="${img.imageUrl}" alt="${img.title}">
+            <div class="title">${img.title}</div>
+          `;
+          container.appendChild(div);
+        });
+      })
+      .catch(err => {
+        console.error('Failed to load images:', err);
+        document.getElementById('galleryContainer').innerHTML = '<p style="color:red;">Error loading images.</p>';
+      });
+  </script>
+</body>
+</html>

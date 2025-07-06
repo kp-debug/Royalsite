@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Youth Events | Royal Seed Chapel</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    video.bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .overlay {
+      background: rgba(0, 0, 0, 0.7);
+      height: 100%;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .content {
+      position: relative;
+      z-index: 2;
+      padding: 60px 20px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      margin-bottom: 30px;
+      color: #fff;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    #calendar {
+      max-width: 900px;
+      margin: 0 auto;
+      background-color: rgba(255, 255, 255, 0.12);
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+    }
+
+    @media screen and (max-width: 768px) {
+      h1 {
+        font-size: 2rem;
+      }
+
+      #calendar {
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🎬 Background Video -->
+  <video autoplay muted loop class="bg-video">
+    <source src="e2.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
+  <div class="overlay"></div>
+
+  <div class="content">
+    <h1>🎉 Upcoming Youth & Church Events</h1>
+    <div id="calendar"></div>
+  </div>
+
+  <!-- FullCalendar & Fetch Logic -->
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const calendarEl = document.getElementById('calendar');
+
+      try {
+        const res = await fetch('http://localhost:5000/api/events');
+        const events = await res.json();
+
+        const formattedEvents = events.map(event => ({
+          id: event._id,
+          title: event.title,
+          start: event.date,
+          extendedProps: {
+            description: event.description,
+            flyer: event.flyer,
+            video: event.video,
+            fullDetails: event.fullDetails
+          }
+        }));
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          events: formattedEvents,
+          eventClick: function(info) {
+            const id = info.event.id;
+            window.location.href = `event-details.html?id=${id}`;
+          }
+        });
+
+        calendar.render();
+      } catch (err) {
+        console.error('Error loading events:', err);
+        calendarEl.innerHTML = "<p style='color: red;'>Failed to load events. Please try again later.</p>";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!-- public/admin/add-sermon.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Upload Sermon</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: url('../background3.jpg') no-repeat center center/cover;
+      text-align: center;
+      color: white;
+      padding-top: 100px;
+    }
+    form {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 30px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    input, button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px;
+      width: 300px;
+    }
+    button {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Upload Sermon File</h1>
+  <form id="uploadForm" enctype="multipart/form-data">
+    <input type="text" name="title" placeholder="Sermon Title" required />
+    <input type="text" name="preacher" placeholder="Preacher Name" required />
+    <input type="file" name="sermonFile" accept=".mp4,.mp3,.pdf,.docx" required />
+    <button type="submit">Upload Sermon</button>
+    <div id="message"></div>
+  </form>
+
+  <script>
+    document.getElementById("uploadForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const form = document.getElementById("uploadForm");
+      const formData = new FormData(form);
+
+      const res = await fetch('/api/sermons/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await res.json();
+      document.getElementById("message").innerText = data.message;
+      if (res.ok) form.reset();
+    });
+  </script>
+</body>
+</html>

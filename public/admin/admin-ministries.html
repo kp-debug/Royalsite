@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin | Ministry Sign-Ups</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      height: 100%;
+      overflow: hidden;
+      color: white;
+    }
+
+    video.bg-video {
+      position: fixed;
+      top: 0;
+      left: 0;
+      min-width: 100%;
+      min-height: 100%;
+      object-fit: cover;
+      z-index: -1;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      padding: 40px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      color: #f0c040;
+      text-shadow: 2px 2px 5px #000;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    th, td {
+      padding: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      text-align: left;
+    }
+
+    th {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: #f0c040;
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .no-data {
+      text-align: center;
+      color: #ccc;
+      margin-top: 20px;
+    }
+
+    .btn-container {
+      text-align: center;
+      margin: 20px 0;
+    }
+
+    button {
+      padding: 12px 25px;
+      background-color: #f0c040;
+      color: #111;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #fff;
+    }
+
+    @media screen and (max-width: 768px) {
+      table, th, td {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 🎬 Video Background -->
+  <video autoplay muted loop class="bg-video">
+    <source src="e3.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <div class="overlay"></div>
+
+  <div class="container">
+    <h1>📋 Ministry Sign-Ups</h1>
+
+    <div class="btn-container">
+      <button onclick="exportCSV()">⬇️ Export to CSV</button>
+    </div>
+
+    <table id="ministryTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Ministry</th>
+          <th>Submitted</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <p class="no-data" id="noData">Loading...</p>
+  </div>
+
+  <script>
+    let ministryData = [];
+
+    async function loadMinistries() {
+      const res = await fetch('/api/ministries');
+      const data = await res.json();
+      ministryData = data;
+
+      const tbody = document.querySelector('#ministryTable tbody');
+      const noData = document.getElementById('noData');
+
+      if (data.length === 0) {
+        noData.textContent = 'No sign-ups found.';
+        return;
+      }
+
+      noData.style.display = 'none';
+
+      data.forEach(signup => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${signup.name}</td>
+          <td>${signup.phone}</td>
+          <td>${signup.ministry}</td>
+          <td>${new Date(signup.createdAt).toLocaleString()}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function exportCSV() {
+      if (ministryData.length === 0) {
+        alert("No data to export.");
+        return;
+      }
+
+      const headers = ['Name', 'Phone', 'Ministry', 'Submitted'];
+      const rows = ministryData.map(signup => [
+        signup.name,
+        signup.phone,
+        signup.ministry,
+        new Date(signup.createdAt).toLocaleString()
+      ]);
+
+      let csvContent = "data:text/csv;charset=utf-8,"
+        + headers.join(",") + "\n"
+        + rows.map(row => row.map(val => `"${val}"`).join(",")).join("\n");
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "ministry_signups.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    loadMinistries();
+  </script>
+</body>
+</html>
