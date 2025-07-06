@@ -96,7 +96,7 @@
       const calendarEl = document.getElementById('calendar');
 
       try {
-        const res = await fetch('http://localhost:5000/api/events');
+        const res = await fetch('https://royalsite.onrender.com/api/events');
         const events = await res.json();
 
         const formattedEvents = events.map(event => ({
