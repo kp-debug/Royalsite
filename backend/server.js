@@ -7,7 +7,6 @@ const multer = require('multer');
 const fs = require('fs');
 const busRoutes = require('./routes/bus');
 
-
 // Load environment variables
 dotenv.config();
 
@@ -47,6 +46,11 @@ app.use('/api/events', require('./routes/events'));
 app.use('/api/testimonies', require('./routes/testimonies'));
 app.use('/api/ministries', require('./routes/ministries'));
 app.use('/api/bus', busRoutes);
+
+// Serve royal.html as homepage
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/royal.html'));
+});
 
 // Start server
 const PORT = process.env.PORT || 5000;
