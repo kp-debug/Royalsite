@@ -61,6 +61,12 @@
       border-radius: 10px;
       cursor: pointer;
     }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -82,21 +88,29 @@
   </form>
 
   <script>
+    const API_URL = 'https://royalsite.onrender.com/api/testimonies';
+
     document.getElementById('testimonyForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
 
-      const res = await fetch('http://localhost:5000/api/testimonies', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(formData))
-      });
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
 
-      if (res.ok) {
-        alert('Thank you! Your testimony will be reviewed.');
-        e.target.reset();
-      } else {
-        alert('Error submitting. Please try again.');
+        if (res.ok) {
+          alert('✅ Thank you! Your testimony has been submitted and will be reviewed.');
+          e.target.reset();
+        } else {
+          alert('❌ Submission failed. Please try again later.');
+        }
+      } catch (err) {
+        alert('⚠️ Server may be waking up. Please try again in a few seconds.');
+        console.error(err);
       }
     });
   </script>

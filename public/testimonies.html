@@ -94,11 +94,11 @@
   <div class="container">
     <h1>🙌 Approved Testimonies</h1>
     <div id="testimonyList">Loading testimonies...</div>
-    <a href="index.html" class="back-btn">← Back to Home</a>
+    <a href="royal.html" class="back-btn">← Back to Home</a>
   </div>
 
   <script>
-    const API = 'http://localhost:5000/api/testimonies';
+    const API = 'https://royalsite.onrender.com/api/testimonies';
 
     async function loadTestimonies() {
       try {
@@ -123,7 +123,11 @@
           `;
         });
       } catch (error) {
-        document.getElementById('testimonyList').innerHTML = '<p>Error loading testimonies.</p>';
+        document.getElementById('testimonyList').innerHTML = `
+          <p style="color: red;">
+            ⚠️ Error loading testimonies. The server may be waking up. Please refresh after a few seconds.
+          </p>`;
+        console.error(error);
       }
     }
 

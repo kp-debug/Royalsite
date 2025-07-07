@@ -16,6 +16,12 @@
       margin: auto;
     }
 
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #f0c040;
+    }
+
     .testimony {
       background: rgba(255,255,255,0.05);
       padding: 20px;
@@ -30,6 +36,12 @@
 
     .testimony small {
       color: #aaa;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .testimony p {
+      line-height: 1.6;
     }
 
     button {
@@ -42,53 +54,75 @@
     }
 
     .approve { background-color: #4caf50; color: white; }
-    .reject { background-color: #e53935; color: white; }
-    .delete { background-color: #555; color: white; }
+    .reject { background-color: #fbc02d; color: black; }
+    .delete { background-color: #e53935; color: white; }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🛡️ Admin Panel – Testimonies</h1>
-    <div id="testimonyList"></div>
+    <div id="testimonyList">Loading testimonies...</div>
   </div>
 
   <script>
-    const API = 'http://localhost:5000/api/testimonies';
+    const API = 'https://royalsite.onrender.com/api/testimonies';
 
     async function loadTestimonies() {
-      const res = await fetch(`${API}/all`);
-      const data = await res.json();
-
       const container = document.getElementById('testimonyList');
-      container.innerHTML = '';
+      container.innerHTML = 'Loading testimonies...';
 
-      data.forEach(t => {
-        container.innerHTML += `
-          <div class="testimony">
-            <h3>${t.title}</h3>
-            <small>From: ${t.name} | Status: ${t.status}</small>
-            <p>${t.content}</p>
-            <button class="approve" onclick="updateStatus('${t._id}', 'approved')">✅ Approve</button>
-            <button class="reject" onclick="updateStatus('${t._id}', 'pending')">⏳ Mark Pending</button>
-            <button class="delete" onclick="deleteTestimony('${t._id}')">🗑 Delete</button>
-          </div>
-        `;
-      });
+      try {
+        const res = await fetch(`${API}/all`);
+        const data = await res.json();
+
+        container.innerHTML = '';
+
+        if (data.length === 0) {
+          container.innerHTML = '<p>No testimonies submitted yet.</p>';
+          return;
+        }
+
+        data.forEach(t => {
+          container.innerHTML += `
+            <div class="testimony">
+              <h3>${t.title}</h3>
+              <small>From: ${t.name} | Status: ${t.status} | ${new Date(t.createdAt).toLocaleDateString()}</small>
+              <p>${t.content}</p>
+              <button class="approve" onclick="updateStatus('${t._id}', 'approved')">✅ Approve</button>
+              <button class="reject" onclick="updateStatus('${t._id}', 'pending')">⏳ Mark Pending</button>
+              <button class="delete" onclick="deleteTestimony('${t._id}')">🗑 Delete</button>
+            </div>
+          `;
+        });
+      } catch (err) {
+        console.error(err);
+        container.innerHTML = `<p style="color:red;">⚠️ Failed to load testimonies. Please refresh or try again in a few seconds.</p>`;
+      }
     }
 
     async function updateStatus(id, status) {
-      await fetch(`${API}/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status })
-      });
-      loadTestimonies();
+      try {
+        await fetch(`${API}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status })
+        });
+        loadTestimonies();
+      } catch (err) {
+        alert('❌ Failed to update status.');
+        console.error(err);
+      }
     }
 
     async function deleteTestimony(id) {
-      if (confirm("Delete this testimony?")) {
-        await fetch(`${API}/${id}`, { method: 'DELETE' });
-        loadTestimonies();
+      if (confirm("🗑 Are you sure you want to delete this testimony?")) {
+        try {
+          await fetch(`${API}/${id}`, { method: 'DELETE' });
+          loadTestimonies();
+        } catch (err) {
+          alert('❌ Failed to delete testimony.');
+          console.error(err);
+        }
       }
     }
 
