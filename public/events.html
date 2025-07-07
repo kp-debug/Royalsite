@@ -95,8 +95,13 @@
     document.addEventListener('DOMContentLoaded', async () => {
       const calendarEl = document.getElementById('calendar');
 
+      // 🔁 Automatically switch between local and live
+      const API_BASE = location.hostname === 'localhost'
+        ? 'http://localhost:5000'
+        : 'https://royalsite.onrender.com';
+
       try {
-        const res = await fetch('https://royalsite.onrender.com/api/events');
+        const res = await fetch(`${API_BASE}/api/events`);
         const events = await res.json();
 
         const formattedEvents = events.map(event => ({

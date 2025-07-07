@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Home Page -->
+  <url>
+    <loc>https://royalsite.onrender.com/</loc>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Events Page -->
+  <url>
+    <loc>https://royalsite.onrender.com/events.html</loc>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Testimonies Page -->
+  <url>
+    <loc>https://royalsite.onrender.com/testimonies.html</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Sermons Page -->
+  <url>
+    <loc>https://royalsite.onrender.com/sermons.html</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Ministries Page -->
+  <url>
+    <loc>https://royalsite.onrender.com/ministries.html</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Join Us Page -->
+  <url>
+    <loc>https://royalsite.onrender.com/join.html</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Prayer Requests Page -->
+  <url>
+    <loc>https://royalsite.onrender.com/prayer.html</loc>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Contact Page -->
+  <url>
+    <loc>https://royalsite.onrender.com/contact.html</loc>
+    <priority>0.6</priority>
+  </url>
+
+</urlset>
