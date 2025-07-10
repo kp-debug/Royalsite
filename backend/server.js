@@ -33,6 +33,7 @@ const eventsRoutes = require('./routes/events');
 const testimoniesRoutes = require('./routes/testimonies');
 const ministriesRoutes = require('./routes/ministries');
 const sendMessageRoute = require('./routes/send-message'); // ✅ SMS Route
+const broadcastRoute = require('./routes/broadcast');
 
 app.use('/api/bus', busRoutes);
 app.use('/api/members', membersRoutes);
@@ -44,6 +45,7 @@ app.use('/api/events', eventsRoutes);
 app.use('/api/testimonies', testimoniesRoutes);
 app.use('/api/ministries', ministriesRoutes);
 app.use('/send-message', sendMessageRoute); // ✅ SMS route
+app.use('/send-broadcast', broadcastRoute);
 
 // Serve royal.html as the homepage
 app.get('/', (req, res) => {
