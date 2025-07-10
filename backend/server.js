@@ -9,10 +9,10 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(path.join(__dirname, '../public'))); // Serve static HTML, CSS, JS
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -34,6 +34,7 @@ const testimoniesRoutes = require('./routes/testimonies');
 const ministriesRoutes = require('./routes/ministries');
 const sendMessageRoute = require('./routes/send-message'); // ✅ SMS Route
 
+app.use('/api/bus', busRoutes);
 app.use('/api/members', membersRoutes);
 app.use('/api/sermons', sermonsRoutes);
 app.use('/api/admin', adminRoutes);
@@ -42,12 +43,11 @@ app.use('/api/prayer-requests', prayerRequestRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/testimonies', testimoniesRoutes);
 app.use('/api/ministries', ministriesRoutes);
-app.use('/api/bus', busRoutes);
-app.use('/send-message', sendMessageRoute); // ✅ SMS Route
+app.use('/send-message', sendMessageRoute); // ✅ SMS route
 
-// Default Route
+// Serve royal.html as the homepage
 app.get('/', (req, res) => {
-  res.send('🚀 Royal Seed Chapel Server Running');
+  res.sendFile(path.join(__dirname, '../public', 'royal.html'));
 });
 
 // Start Server
