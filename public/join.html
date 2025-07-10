@@ -152,8 +152,14 @@
         role: document.getElementById('role').value,
       };
 
+      // Validate phone number
+      if (!/^\+?\d{10,15}$/.test(data.phone)) {
+        alert("Please enter a valid phone number including country code (e.g., +233...).");
+        return;
+      }
+
       try {
-        // Save user to DB
+        // Save to database
         const res = await fetch('https://royalsite.onrender.com/api/members', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -172,14 +178,16 @@
           });
 
           const result = await sms.json();
-          if (result.success) {
+          console.log("SMS Result:", result);
+
+          if (sms.ok && result.SMSMessageData) {
             localStorage.setItem('newMemberName', data.name);
             window.location.href = 'welcome.html';
           } else {
-            alert("Form submitted but SMS failed: " + result.error);
+            alert("Form saved, but SMS failed: " + (result.error || "Unknown error"));
           }
         } else {
-          alert("There was a problem submitting your form.");
+          alert("Failed to save your data. Please try again.");
         }
       } catch (err) {
         console.error(err);
