@@ -152,23 +152,25 @@
         role: document.getElementById('role').value,
       };
 
-      // Validate phone number
+      // ✅ Validate phone number
       if (!/^\+?\d{10,15}$/.test(data.phone)) {
         alert("Please enter a valid phone number including country code (e.g., +233...).");
         return;
       }
 
       try {
-        // Save to database
+        // ✅ Save to database
         const res = await fetch('https://royalsite.onrender.com/api/members', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
 
+        const memberRes = await res.json();
+
         if (res.ok) {
-          // Send SMS
-          const sms = await fetch('https://royalsite.onrender.com/send-message', {
+          // ✅ Send SMS
+          const smsRes = await fetch('https://royalsite.onrender.com/send-message', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -177,20 +179,20 @@
             })
           });
 
-          const result = await sms.json();
+          const result = await smsRes.json();
           console.log("SMS Result:", result);
 
-          if (sms.ok && result.SMSMessageData) {
+          if (smsRes.ok && (result.success || result.SMSMessageData)) {
             localStorage.setItem('newMemberName', data.name);
             window.location.href = 'welcome.html';
           } else {
             alert("Form saved, but SMS failed: " + (result.error || "Unknown error"));
           }
         } else {
-          alert("Failed to save your data. Please try again.");
+          alert("Saving member failed: " + (memberRes.error || "Unknown error"));
         }
       } catch (err) {
-        console.error(err);
+        console.error("Network/server error:", err);
         alert("Server error. Try again later.");
       }
     });

@@ -1,27 +1,28 @@
+// send-sms.js
+const axios = require('axios');
 require('dotenv').config();
-const Africastalking = require('africastalking');
 
-// Initialize Africa's Talking
-const africastalking = Africastalking({
-  apiKey: process.env.AT_API_KEY,
-  username: process.env.AT_USERNAME,
-});
+async function sendSMS(phoneNumber, message) {
+  const senderId = process.env.SENDER_ID || 'africastkn';
 
-const sms = africastalking.SMS;
+  const params = new URLSearchParams();
+  params.append('username', process.env.AT_USERNAME);
+  params.append('to', phoneNumber);
+  params.append('message', message);
+  params.append('from', senderId);
 
-// Send SMS function
-const sendSMS = async (phoneNumber, message) => {
-  try {
-    const response = await sms.send({
-      to: [phoneNumber],
-      message: message,
-    });
-    console.log('✅ SMS Sent:', response);
-    return response;
-  } catch (err) {
-    console.error('❌ SMS Error:', err);
-    return err;
-  }
-};
+  const response = await axios.post(
+    'https://api.africastalking.com/version1/messaging',
+    params,
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'apiKey': process.env.AT_API_KEY,
+      },
+    }
+  );
+
+  return response.data;
+}
 
 module.exports = sendSMS;
