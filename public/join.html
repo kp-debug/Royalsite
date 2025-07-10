@@ -153,21 +153,37 @@
       };
 
       try {
-        const res = await fetch('/api/members', {
+        // Save user to DB
+        const res = await fetch('https://royalsite.onrender.com/api/members', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
 
         if (res.ok) {
-          localStorage.setItem('newMemberName', data.name);
-          window.location.href = 'welcome.html';
+          // Send SMS
+          const sms = await fetch('https://royalsite.onrender.com/send-message', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              phoneNumber: data.phone,
+              message: `Hi ${data.name}, welcome to Royal Seed Chapel! We’ll be sending you devotionals, updates, and event alerts. God bless you!`
+            })
+          });
+
+          const result = await sms.json();
+          if (result.success) {
+            localStorage.setItem('newMemberName', data.name);
+            window.location.href = 'welcome.html';
+          } else {
+            alert("Form submitted but SMS failed: " + result.error);
+          }
         } else {
           alert("There was a problem submitting your form.");
         }
       } catch (err) {
         console.error(err);
-        alert("Server error.");
+        alert("Server error. Try again later.");
       }
     });
   </script>
