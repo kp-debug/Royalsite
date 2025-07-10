@@ -88,6 +88,7 @@
       margin-top: 15px;
       color: #00ffcc;
       text-align: center;
+      font-size: 1em;
     }
 
     footer {
@@ -120,7 +121,17 @@
   <script>
     document.getElementById('broadcastForm').addEventListener('submit', async function(e) {
       e.preventDefault();
-      const message = document.getElementById('message').value;
+
+      const messageBox = document.getElementById('message');
+      const message = messageBox.value.trim();
+      const status = document.getElementById('status');
+
+      if (!message) {
+        status.innerText = "❌ Please enter a message before sending.";
+        return;
+      }
+
+      status.innerText = "⏳ Sending...";
 
       try {
         const res = await fetch('/send-broadcast', {
@@ -130,12 +141,16 @@
         });
 
         const result = await res.json();
-        document.getElementById('status').innerText = result.success
-          ? `✅ Message sent to ${result.count} members`
-          : `❌ Failed: ${result.error}`;
+
+        if (res.ok && result.success) {
+          status.innerText = `✅ Message sent to ${result.count} members`;
+          messageBox.value = ''; // clear after send
+        } else {
+          status.innerText = `❌ Failed: ${result.error || 'Unknown error'}`;
+        }
       } catch (err) {
         console.error(err);
-        document.getElementById('status').innerText = "❌ Network/server error.";
+        status.innerText = "❌ Network/server error.";
       }
     });
   </script>
