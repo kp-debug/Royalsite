@@ -1,15 +1,17 @@
 // backend/send-sms.js
 const axios = require('axios');
+const qs = require('qs'); // Ensure this is installed: npm install qs
 require('dotenv').config();
 
 async function sendSMS(phoneNumber, message) {
-  const username = process.env.AT_USERNAME;
-  const apiKey = process.env.AT_API_KEY;
+  const senderId = process.env.SENDER_ID || 'africastkn';
 
-  const payload = new URLSearchParams();
-  payload.append('username', username);
-  payload.append('to', phoneNumber);
-  payload.append('message', message);
+  const payload = qs.stringify({
+    username: process.env.AT_USERNAME,
+    to: phoneNumber,
+    message,
+    from: senderId,
+  });
 
   try {
     const response = await axios.post(
@@ -18,13 +20,13 @@ async function sendSMS(phoneNumber, message) {
       {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'apiKey': apiKey,
+          'apiKey': process.env.AT_API_KEY,
         },
       }
     );
 
-    console.log('✅ SMS sent:', response.data);
-    return response.data;
+    // Return a success flag so frontend can process it
+    return { success: true, raw: response.data };
   } catch (error) {
     console.error('❌ SMS sending error:', error.response?.data || error.message);
     throw new Error('Failed to send SMS');
