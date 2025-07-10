@@ -3,29 +3,29 @@ const axios = require('axios');
 require('dotenv').config();
 
 async function sendSMS(phoneNumber, message) {
-  const senderId = process.env.SENDER_ID; // Optional
+  try {
+    const response = await axios.post(
+      'https://api.africastalking.com/version1/messaging',
+      null,
+      {
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'apiKey': process.env.AT_API_KEY,
+        },
+        params: {
+          username: process.env.AT_USERNAME,
+          to: phoneNumber,
+          message: message,
+          // ❌ Sender ID removed – uses default AFRICASTKNG
+        },
+      }
+    );
 
-  const params = new URLSearchParams();
-  params.append('username', process.env.AT_USERNAME);
-  params.append('to', phoneNumber);
-  params.append('message', message);
-
-  if (senderId) {
-    params.append('from', senderId);
+    return response.data;
+  } catch (error) {
+    console.error('❌ SMS sending error:', error.response?.data || error.message);
+    throw new Error(error.response?.data || error.message);
   }
-
-  const response = await axios.post(
-    'https://api.africastalking.com/version1/messaging',
-    params,
-    {
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'apiKey': process.env.AT_API_KEY,
-      },
-    }
-  );
-
-  return response.data;
 }
 
 module.exports = sendSMS;
