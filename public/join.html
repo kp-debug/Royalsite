@@ -116,7 +116,15 @@
       <input type="text" id="name" name="name" required>
 
       <label for="phone">Phone Number</label>
-      <input type="text" id="phone" name="phone" required>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        required
+        placeholder="+233XXXXXXXXX"
+        pattern="^\+233[0-9]{9}$"
+        title="Phone number must start with +233 followed by 9 digits"
+      >
 
       <label for="email">Email Address</label>
       <input type="email" id="email" name="email">
@@ -152,25 +160,22 @@
         role: document.getElementById('role').value,
       };
 
-      // ✅ Validate phone number
-      if (!/^\+?\d{10,15}$/.test(data.phone)) {
-        alert("Please enter a valid phone number including country code (e.g., +233...).");
+      if (!/^\+233[0-9]{9}$/.test(data.phone)) {
+        alert("Please enter a valid phone number like +233XXXXXXXXX");
         return;
       }
 
       try {
-        // ✅ Save to database
+        // Save to DB
         const res = await fetch('https://royalsite.onrender.com/api/members', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
 
-        const memberRes = await res.json();
-
         if (res.ok) {
-          // ✅ Send SMS
-          const smsRes = await fetch('https://royalsite.onrender.com/send-message', {
+          // Send SMS
+          const sms = await fetch('https://royalsite.onrender.com/send-message', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -179,21 +184,21 @@
             })
           });
 
-          const result = await smsRes.json();
-          console.log("SMS Result:", result);
+          const resultText = await sms.text();
+          console.log("SMS Result:", resultText);
 
-          if (smsRes.ok && (result.success || result.SMSMessageData)) {
+          if (sms.ok && resultText.includes('Success')) {
             localStorage.setItem('newMemberName', data.name);
             window.location.href = 'welcome.html';
           } else {
-            alert("Form saved, but SMS failed: " + (result.error || "Unknown error"));
+            alert("Form saved, but SMS may not have been sent properly.");
           }
         } else {
-          alert("Saving member failed: " + (memberRes.error || "Unknown error"));
+          alert("Failed to save your data. Try again.");
         }
       } catch (err) {
         console.error("Network/server error:", err);
-        alert("Server error. Try again later.");
+        alert("An error occurred. Please try again later.");
       }
     });
   </script>
