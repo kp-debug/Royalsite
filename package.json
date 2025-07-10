@@ -1,0 +1,27 @@
+{
+  "name": "royalsite",
+  "version": "1.0.0",
+  "description": "✝️ Royal Seed Chapel International - Church Website\r This is the official church website for Royal Seed Chapel International, built to serve members and visitors with sermon videos, prayer request features, media gallery, and admin tools.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kp-debug/royalsite.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kp-debug/royalsite/issues"
+  },
+  "homepage": "https://github.com/kp-debug/royalsite#readme",
+  "dependencies": {
+    "africastalking": "^0.7.3",
+    "axios": "^1.10.0",
+    "dotenv": "^17.1.0",
+    "qs": "^6.14.0"
+  }
+}
