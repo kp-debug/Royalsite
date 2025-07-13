@@ -1,18 +1,34 @@
-const express = require('express');
+ const express = require('express'); 
 const router = express.Router();
 const Member = require('../models/member');
-const { Parser } = require('json2csv'); // For CSV export
+const { Parser } = require('json2csv');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-// POST: Add new member
+// POST: Register new member
 router.post('/', async (req, res) => {
   try {
-    const { name, phone, email, address, role, dob } = req.body;
+    let { name, phone, email, address, role, dob } = req.body;
 
     if (!name || !phone) {
       return res.status(400).json({ message: 'Name and phone are required' });
     }
 
-    const newMember = new Member({ name, phone, email, address, role, dob });
+    // Clean and standardize phone
+    phone = phone.replace(/\s+/g, '');
+    if (phone.startsWith('0')) {
+      phone = '+233' + phone.slice(1);
+    }
+
+    const newMember = new Member({
+      name: name.trim(),
+      phone,
+      email,
+      address,
+      role,
+      dob,
+    });
+
     await newMember.save();
     res.status(201).json({ message: 'Member registered successfully' });
 
@@ -36,7 +52,8 @@ router.get('/', async (req, res) => {
 // GET member by phone
 router.get('/phone/:phone', async (req, res) => {
   try {
-    const member = await Member.findOne({ phone: req.params.phone });
+    const phone = req.params.phone.replace(/\s+/g, '');
+    const member = await Member.findOne({ phone });
 
     if (!member) {
       return res.status(404).json({ message: 'Member not found' });
@@ -83,4 +100,57 @@ router.get('/export/csv', async (req, res) => {
   }
 });
 
-module.exports = router;
+// POST: FLEXIBLE LOGIN with Remember Me
+router.post('/login', async (req, res) => {
+  try {
+    let { name, phone, rememberMe } = req.body;
+
+    if (!name || !phone) {
+      return res.status(400).json({ message: 'Name and phone are required' });
+    }
+
+    name = name.trim().toLowerCase();
+    phone = phone.replace(/\s+/g, '');
+
+    if (phone.startsWith('0')) {
+      phone = '+233' + phone.slice(1);
+    } else if (!phone.startsWith('+233')) {
+      return res.status(400).json({ message: 'Invalid phone format' });
+    }
+
+    const member = await Member.findOne({
+      name: { $regex: new RegExp(`^${name}$`, 'i') },
+      phone,
+    });
+
+    if (!member) {
+      return res.status(404).json({ message: 'Member not found in records' });
+    }
+
+    const expiresIn = rememberMe ? '30d' : '1h';
+    const token = jwt.sign(
+      { id: member._id, name: member.name },
+      process.env.JWT_SECRET,
+      { expiresIn }
+    );
+
+    res.cookie('token', token, {
+      httpOnly: true,
+      maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000,
+    });
+
+    res.status(200).json({ message: 'Login successful', member, token });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Login error, please try again' });
+  }
+});
+
+// LOGOUT route to clear token
+router.post('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.status(200).json({ message: 'Logged out successfully' });
+});
+
+module.exports = router;  

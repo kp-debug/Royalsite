@@ -121,9 +121,7 @@
         id="phone"
         name="phone"
         required
-        placeholder="+233XXXXXXXXX"
-        pattern="^\+233[0-9]{9}$"
-        title="Phone number must start with +233 followed by 9 digits"
+        placeholder="e.g. 024XXXXXXX or +23324XXXXXXX"
       >
 
       <label for="email">Email Address</label>
@@ -148,57 +146,62 @@
   </div>
 
   <script>
-    document.getElementById('joinForm').addEventListener('submit', async function(e) {
+    document.getElementById('joinForm').addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      const data = {
-        name: document.getElementById('name').value,
-        phone: document.getElementById('phone').value,
-        email: document.getElementById('email').value,
-        dob: document.getElementById('dob').value,
-        address: document.getElementById('address').value,
-        role: document.getElementById('role').value,
-      };
+      let phone = document.getElementById('phone').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value;
+      const dob = document.getElementById('dob').value;
+      const address = document.getElementById('address').value;
+      const role = document.getElementById('role').value;
 
-      if (!/^\+233[0-9]{9}$/.test(data.phone)) {
-        alert("Please enter a valid phone number like +233XXXXXXXXX");
-        return;
+      // Format phone
+      phone = phone.replace(/\s+/g, '');
+      if (phone.startsWith('0')) {
+        phone = '+233' + phone.slice(1);
       }
+
+      const data = { name, phone, email, dob, address, role };
 
       try {
         // Save to DB
-        const res = await fetch('https://royalsite.onrender.com/api/members', {
+        const res = await fetch('/api/members', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          body: JSON.stringify(data),
         });
 
-        if (res.ok) {
-          // Send SMS
-          const sms = await fetch('https://royalsite.onrender.com/send-message', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              phoneNumber: data.phone,
-              message: `Hi ${data.name}, welcome to Royal Seed Chapel! We’ll be sending you devotionals, updates, and event alerts. God bless you!`
-            })
-          });
-
-          const resultText = await sms.text();
-          console.log("SMS Result:", resultText);
-
-          if (sms.ok && resultText.includes('Success')) {
-            localStorage.setItem('newMemberName', data.name);
-            window.location.href = 'welcome.html';
-          } else {
-            alert("Form saved, but SMS may not have been sent properly.");
-          }
-        } else {
-          alert("Failed to save your data. Try again.");
+        if (!res.ok) {
+          const error = await res.json();
+          alert(error.message || "Failed to register. Try again.");
+          return;
         }
+
+        // Send SMS
+        const sms = await fetch('/send-message', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            phoneNumber: phone,
+            message: `Hi ${name}, welcome to Royal Seed Chapel! We’ll be sending you devotionals, updates, and event alerts. God bless you!`
+          })
+        });
+
+        const smsText = await sms.text();
+        console.log("SMS Result:", smsText);
+
+        if (!sms.ok || !smsText.includes("Success")) {
+          alert("Registered, but SMS may not have gone through.");
+        }
+
+        alert(`Welcome, ${name}! Registration successful.`);
+        localStorage.setItem("newMemberName", name);
+        window.location.href = "welcome.html";
+
       } catch (err) {
-        console.error("Network/server error:", err);
-        alert("An error occurred. Please try again later.");
+        console.error("Error:", err);
+        alert("An error occurred. Please try again.");
       }
     });
   </script>
