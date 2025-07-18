@@ -4,7 +4,11 @@
   <meta charset="UTF-8" />
   <title>Broadcast Message | Royal Seed Chapel</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     body, html {
       height: 100%;
@@ -39,7 +43,7 @@
       width: 90%;
       max-width: 600px;
       margin: 100px auto;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.85);
       padding: 40px;
       border-radius: 15px;
       box-shadow: 0 8px 16px rgba(0,0,0,0.5);
@@ -50,7 +54,9 @@
       margin-bottom: 30px;
       font-size: 2em;
       background: linear-gradient(to right, #00ffcc, #0099ff);
+      background-clip: text;
       -webkit-background-clip: text;
+      color: transparent;
       -webkit-text-fill-color: transparent;
     }
 
@@ -63,6 +69,7 @@
       border: none;
       color: #333;
       background: #eee;
+      resize: vertical;
     }
 
     button {
@@ -89,6 +96,7 @@
       color: #00ffcc;
       text-align: center;
       font-size: 1em;
+      min-height: 24px;
     }
 
     footer {
@@ -144,7 +152,7 @@
 
         if (res.ok && result.success) {
           status.innerText = `✅ Message sent to ${result.count} members`;
-          messageBox.value = ''; // clear after send
+          messageBox.value = ''; // Clear textarea after send
         } else {
           status.innerText = `❌ Failed: ${result.error || 'Unknown error'}`;
         }

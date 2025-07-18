@@ -1,30 +1,48 @@
 const express = require('express');
 const router = express.Router();
-const Member = require('../models/member'); // assuming your model is Member.js
-const sendSMS = require('../../send-sms'); // shared function
+const Member = require('../models/member');
+const sendSMS = require('../../send-sms');
 
 router.post('/', async (req, res) => {
   const { message } = req.body;
 
+  if (!message || message.trim() === '') {
+    return res.status(400).json({ error: 'Message is required' });
+  }
+
   try {
-    const members = await Member.find({}, 'phone'); // Only get phone numbers
+    const members = await Member.find({}, 'phone');
     let sentCount = 0;
+    let failedNumbers = [];
 
     for (const member of members) {
-      if (/^\+?\d{10,15}$/.test(member.phone)) {
+      const phone = member.phone?.trim();
+
+      if (/^\+?\d{10,15}$/.test(phone)) {
         try {
-          await sendSMS(member.phone, message);
+          await sendSMS(phone, message);
+          console.log(`✅ SMS sent to ${phone}`);
           sentCount++;
         } catch (smsErr) {
-          console.error(`❌ SMS to ${member.phone} failed`, smsErr.message);
+          console.error(`❌ SMS failed to ${phone}:`, smsErr.message);
+          failedNumbers.push(phone);
         }
+      } else {
+        console.warn(`⚠️ Skipped invalid phone: ${phone}`);
+        failedNumbers.push(phone);
       }
     }
 
-    res.json({ success: true, count: sentCount });
+    res.json({
+      success: true,
+      message: `Broadcast completed.`,
+      sent: sentCount,
+      failed: failedNumbers.length,
+      failedNumbers
+    });
   } catch (err) {
     console.error('❌ Broadcast Error:', err.message);
-    res.status(500).json({ success: false, error: 'Server error while broadcasting' });
+    res.status(500).json({ success: false, error: 'Server error during broadcast' });
   }
 });
 

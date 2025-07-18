@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '../public'))); // Serve static HTML, CSS, JS
+app.use(express.static(path.join(__dirname, '../public'))); // Serve HTML, CSS, JS
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -32,9 +32,10 @@ const prayerRequestRoutes = require('./routes/prayerRequests');
 const eventsRoutes = require('./routes/events');
 const testimoniesRoutes = require('./routes/testimonies');
 const ministriesRoutes = require('./routes/ministries');
-const sendMessageRoute = require('./routes/send-message'); // ✅ SMS Route
+const sendMessageRoute = require('./routes/send-message');
 const broadcastRoute = require('./routes/broadcast');
 
+// Mount API Routes
 app.use('/api/bus', busRoutes);
 app.use('/api/members', membersRoutes);
 app.use('/api/sermons', sermonsRoutes);
@@ -44,10 +45,10 @@ app.use('/api/prayer-requests', prayerRequestRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/testimonies', testimoniesRoutes);
 app.use('/api/ministries', ministriesRoutes);
-app.use('/send-message', sendMessageRoute); // ✅ SMS route
+app.use('/send-message', sendMessageRoute);
 app.use('/send-broadcast', broadcastRoute);
 
-// Serve royal.html as the homepage
+// Homepage
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public', 'royal.html'));
 });
