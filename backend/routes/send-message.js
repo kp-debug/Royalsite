@@ -1,4 +1,3 @@
-// backend/routes/api/sms.js
 const express = require('express');
 const router = express.Router();
 const sendSMS = require('../../send-sms');
@@ -12,19 +11,24 @@ router.post('/', async (req, res) => {
   }
 
   try {
+    // 🔎 Debug: log incoming request and sender ID
+    console.log("📩 Incoming SMS request from website form:", {
+      to: phoneNumber,
+      message: message,
+      senderId: process.env.SENDER_ID || 'RSCI'
+    });
+
     const result = await sendSMS(phoneNumber, message);
 
-    // Debug logs
-    console.log("✅ SMS sent successfully!");
-    console.log("➡️  To:", phoneNumber);
-    console.log("📝 Message:", message);
-    console.log("📤 Response from Africa's Talking:", result);
+    // 🔎 Debug: log Africa's Talking response
+    console.log("📤 Response from Africa's Talking:", JSON.stringify(result, null, 2));
 
     res.status(200).json({
       success: true,
       message: 'SMS sent successfully',
       data: result
     });
+
   } catch (error) {
     console.error('❌ Error sending SMS:', error.message);
     res.status(500).json({ error: 'Failed to send SMS' });
