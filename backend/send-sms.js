@@ -12,7 +12,9 @@ require('dotenv').config();
 async function sendSMS(phoneNumber, message) {
   const username = process.env.AT_USERNAME;
   const apiKey = process.env.AT_API_KEY;
-  const senderId = process.env.SENDER_ID || 'RSCI'; // ✅ Use your approved Sender ID
+  const senderId = process.env.SENDER_ID || 'ROYALSEED'; // ✅ Use your approved Sender ID
+
+  console.log("Loaded sender id:", senderId); // 🔍 Added console log
 
   const params = new URLSearchParams();
   params.append('username', username);
