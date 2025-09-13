@@ -16,11 +16,13 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Upload image
+// ✅ Upload image
 router.post('/upload', upload.single('imageFile'), async (req, res) => {
   try {
     const { title } = req.body;
-    const imageUrl = `/uploads/images/${req.file.filename}`;
+
+    // Full URL (http://localhost:5000/uploads/images/filename.jpg)
+    const imageUrl = `${req.protocol}://${req.get('host')}/uploads/images/${req.file.filename}`;
 
     const newImage = new Image({ title, imageUrl });
     await newImage.save();
@@ -32,7 +34,7 @@ router.post('/upload', upload.single('imageFile'), async (req, res) => {
   }
 });
 
-// Get all images
+// ✅ Get all images
 router.get('/', async (req, res) => {
   try {
     const images = await Image.find().sort({ uploadedAt: -1 });
@@ -42,18 +44,21 @@ router.get('/', async (req, res) => {
   }
 });
 
-// Delete image
+// ✅ Delete image
 router.delete('/:id', async (req, res) => {
   try {
     const image = await Image.findById(req.params.id);
     if (!image) return res.status(404).json({ message: 'Image not found' });
 
-    const filePath = path.join(__dirname, '../', image.imageUrl);
+    // Fix: remove "/uploads" prefix before building local path
+    const filePath = path.join(__dirname, '../', image.imageUrl.replace(`${req.protocol}://${req.get('host')}/`, ''));
+
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
     await image.deleteOne();
     res.json({ message: 'Image deleted' });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Deletion failed' });
   }
 });
