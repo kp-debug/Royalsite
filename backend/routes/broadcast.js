@@ -1,49 +1,59 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Member = require('../models/member');
-const sendSMS = require('../../send-sms');
+const Africastalking = require("africastalking");
+const Member = require("../models/Member"); // your members model
 
-router.post('/', async (req, res) => {
-  const { message } = req.body;
+// Africa's Talking setup
+const africastalking = Africastalking({
+  apiKey: process.env.AT_API_KEY,
+  username: process.env.AT_USERNAME
+});
 
-  if (!message || message.trim() === '') {
-    return res.status(400).json({ error: 'Message is required' });
-  }
+const sms = africastalking.SMS;
 
+// POST /send-broadcast
+router.post("/", async (req, res) => {
   try {
-    const members = await Member.find({}, 'phone');
-    let sentCount = 0;
-    let failedNumbers = [];
-
-    for (const member of members) {
-      const phone = member.phone?.trim();
-
-      if (/^\+?\d{10,15}$/.test(phone)) {
-        try {
-          await sendSMS(phone, message);
-          console.log(`✅ SMS sent to ${phone}`);
-          sentCount++;
-        } catch (smsErr) {
-          console.error(`❌ SMS failed to ${phone}:`, smsErr.message);
-          failedNumbers.push(phone);
-        }
-      } else {
-        console.warn(`⚠️ Skipped invalid phone: ${phone}`);
-        failedNumbers.push(phone);
-      }
+    const { message } = req.body;
+    if (!message) {
+      return res.status(400).json({ success: false, error: "Message is required" });
     }
+
+    // Fetch all members from DB
+    const members = await Member.find({}, "phone"); // only get phone numbers
+    if (!members.length) {
+      return res.status(404).json({ success: false, error: "No members found" });
+    }
+
+    // Format phone numbers
+    const phoneNumbers = members.map(m => {
+      let phone = m.phone.replace(/\s+/g, "");
+      if (phone.startsWith("0")) {
+        phone = "+233" + phone.slice(1);
+      }
+      return phone;
+    });
+
+    // Send SMS
+    const response = await sms.send({
+      to: phoneNumbers,
+      message: message,
+      from: "ROYALSEED"
+    });
+
+    console.log("✅ Broadcast sent:", response);
 
     res.json({
       success: true,
-      message: `Broadcast completed.`,
-      sent: sentCount,
-      failed: failedNumbers.length,
-      failedNumbers
+      count: phoneNumbers.length,
+      response
     });
+
   } catch (err) {
-    console.error('❌ Broadcast Error:', err.message);
-    res.status(500).json({ success: false, error: 'Server error during broadcast' });
+    console.error("❌ Broadcast Error:", err);
+    res.status(500).json({ success: false, error: "Server error", details: err.message });
   }
 });
 
 module.exports = router;
+
