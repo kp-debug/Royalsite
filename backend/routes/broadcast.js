@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Africastalking = require("africastalking");
-const Member = require("../models/Member"); // your members model
+const Member = require("../models/member"); // your members model
 
 // Africa's Talking setup
 const africastalking = Africastalking({
