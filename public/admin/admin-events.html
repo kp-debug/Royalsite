@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -70,6 +69,11 @@
       resize: vertical;
     }
 
+    label {
+      display: block;
+      margin-top: 12px;
+    }
+
     button {
       padding: 11px 17px;
       background: #187b3b;
@@ -123,10 +127,6 @@
       border-radius: 6px;
       overflow-wrap: anywhere;
     }
-
-    .hidden {
-      display: none;
-    }
   </style>
 </head>
 
@@ -174,10 +174,11 @@
   </main>
 
   <script>
-    const API_URL = location.hostname === 'localhost' ||
-                    location.hostname === '127.0.0.1'
-      ? 'http://localhost:5000/api/events'
-      : 'https://royalsite.onrender.com/api/events';
+    const API_URL =
+      location.hostname === 'localhost' ||
+      location.hostname === '127.0.0.1'
+        ? 'http://localhost:5000/api/events'
+        : 'https://royalsite.onrender.com/api/events';
 
     const message = document.getElementById('message');
     const eventList = document.getElementById('eventList');
@@ -186,29 +187,34 @@
       message.textContent = text;
     }
 
-    function getAdminToken() {
-      return localStorage.getItem('adminToken');
-    }
+    function mediaUrl(filePath) {
+      if (!filePath) return '';
 
-    function mediaUrl(path) {
-      if (!path) return '';
-      if (/^https?:\/\//i.test(path)) return path;
+      if (/^https?:\/\//i.test(filePath)) {
+        return filePath;
+      }
 
       const serverBase = new URL(API_URL).origin;
-      return serverBase + (path.startsWith('/') ? path : '/' + path);
+
+      return serverBase +
+        (filePath.startsWith('/') ? filePath : '/' + filePath);
     }
 
+    // LOAD ALL EVENTS
     async function loadEvents() {
       eventList.textContent = 'Loading events...';
 
       try {
-        const res = await fetch(API_URL);
-        if (!res.ok) throw new Error('Could not load events.');
+        const response = await fetch(API_URL);
 
-        const events = await res.json();
+        if (!response.ok) {
+          throw new Error('Failed to load events. HTTP ' + response.status);
+        }
+
+        const events = await response.json();
         eventList.replaceChildren();
 
-        if (!events.length) {
+        if (!Array.isArray(events) || events.length === 0) {
           eventList.textContent = 'No events have been added yet.';
           return;
         }
@@ -252,53 +258,63 @@
           }
 
           const deleteButton = document.createElement('button');
+          deleteButton.type = 'button';
           deleteButton.className = 'delete-btn';
           deleteButton.textContent = '🗑 Delete Event';
-          deleteButton.addEventListener('click', () => deleteEvent(evt._id));
-          item.appendChild(deleteButton);
 
+          deleteButton.addEventListener('click', function () {
+            deleteEvent(evt._id, deleteButton);
+          });
+
+          item.appendChild(deleteButton);
           eventList.appendChild(item);
         });
+
       } catch (error) {
+        console.error('Load events error:', error);
         eventList.textContent = error.message;
       }
     }
 
-    document.getElementById('addEventForm').addEventListener('submit',
+    // ADD EVENT
+    document.getElementById('addEventForm').addEventListener(
+      'submit',
       async function (e) {
         e.preventDefault();
 
-        const addBtn = document.getElementById('addBtn');
-        addBtn.disabled = true;
+        const addButton = document.getElementById('addBtn');
+        addButton.disabled = true;
 
         try {
-          const res = await fetch(API_URL + '/add', {
+          const response = await fetch(API_URL + '/add', {
             method: 'POST',
             body: new FormData(e.target)
           });
 
-          const data = await res.json();
+          const data = await response.json();
 
-          if (!res.ok) {
+          if (!response.ok) {
             throw new Error(data.message || 'Failed to add event.');
           }
 
-          showMessage('Event added successfully.');
+          showMessage('Event added successfully!');
           e.target.reset();
           await loadEvents();
+
         } catch (error) {
-          showMessage(error.message);
+          console.error('Add event error:', error);
+          showMessage('Could not add event: ' + error.message);
+
         } finally {
-          addBtn.disabled = false;
+          addButton.disabled = false;
         }
       }
     );
 
-    async function deleteEvent(id) {
-      const token = getAdminToken();
-
-      if (!token) {
-        showMessage('Please log in as an admin before deleting events.');
+    // DELETE EVENT WITHOUT TOKEN VERIFICATION
+    async function deleteEvent(id, button) {
+      if (!id) {
+        alert('Cannot delete: event ID is missing.');
         return;
       }
 
@@ -306,29 +322,50 @@
         return;
       }
 
+      button.disabled = true;
+      button.textContent = 'Deleting...';
+
       try {
-        const res = await fetch(`${API_URL}/${encodeURIComponent(id)}`, {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`
+        console.log('Sending delete request:', API_URL + '/' + id);
+
+        const response = await fetch(
+          API_URL + '/' + encodeURIComponent(id),
+          {
+            method: 'DELETE'
           }
-        });
+        );
 
-        const data = await res.json();
+        const responseText = await response.text();
+        let data = {};
 
-        if (!res.ok) {
-          throw new Error(data.message || 'Could not delete event.');
+        try {
+          data = JSON.parse(responseText);
+        } catch {
+          throw new Error(
+            'The server returned an unexpected response. Check your backend deployment.'
+          );
         }
 
-        showMessage('Event deleted successfully.');
+        if (!response.ok) {
+          throw new Error(
+            data.message || 'Delete failed. HTTP ' + response.status
+          );
+        }
+
+        showMessage('Event deleted successfully!');
         await loadEvents();
+
       } catch (error) {
-        showMessage(error.message);
+        console.error('Delete event error:', error);
+        alert('Delete failed: ' + error.message);
+
+        button.disabled = false;
+        button.textContent = '🗑 Delete Event';
       }
     }
 
+    // DISPLAY EVENTS WHEN THE PAGE OPENS
     loadEvents();
   </script>
 </body>
 </html>
-```
