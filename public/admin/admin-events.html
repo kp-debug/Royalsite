@@ -1,8 +1,11 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Event Manager</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Event Manager | Royal Seed Chapel</title>
+
   <style>
     * {
       margin: 0;
@@ -10,158 +13,317 @@
       box-sizing: border-box;
     }
 
-    html, body {
-      height: 100%;
+    body {
+      min-height: 100vh;
       font-family: Arial, sans-serif;
       color: #fff;
+      background: #101010;
     }
 
     video.bg-video {
       position: fixed;
-      top: 0;
-      left: 0;
-      min-width: 100%;
-      min-height: 100%;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
       z-index: -2;
     }
 
     .overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
+      inset: 0;
+      background: rgba(0, 0, 0, 0.78);
       z-index: -1;
     }
 
     .container {
-      padding: 30px;
-      max-width: 900px;
+      max-width: 950px;
       margin: auto;
+      padding: 30px 18px;
     }
 
     h1 {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
+      color: #e8c66a;
     }
 
-    form {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      margin-bottom: 30px;
-      border-radius: 10px;
-      backdrop-filter: blur(10px);
+    form, .event-list {
+      background: rgba(255, 255, 255, 0.09);
+      padding: 22px;
+      margin-bottom: 25px;
+      border-radius: 12px;
+      border: 1px solid rgba(232, 198, 106, 0.3);
     }
 
     input, textarea {
       width: 100%;
-      margin: 10px 0;
-      padding: 10px;
-      border: none;
+      margin: 9px 0;
+      padding: 12px;
+      border: 0;
       border-radius: 6px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 85px;
+      resize: vertical;
     }
 
     button {
-      padding: 10px 20px;
-      background: green;
+      padding: 11px 17px;
+      background: #187b3b;
       color: white;
-      border: none;
+      border: 0;
       cursor: pointer;
       border-radius: 6px;
       font-weight: bold;
+      margin-top: 8px;
     }
 
-    .event-list {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 15px;
-      border-radius: 10px;
-      backdrop-filter: blur(5px);
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .delete-btn {
+      background: #c62828;
     }
 
     .event-item {
-      margin-bottom: 20px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #888;
+      padding: 16px 0;
+      margin-bottom: 18px;
+      border-bottom: 1px solid #777;
+      overflow-wrap: anywhere;
     }
 
-    .event-item img, .event-item video {
-      max-width: 200px;
+    .event-item h3 {
+      color: #e8c66a;
+      margin-bottom: 10px;
+    }
+
+    .event-item p {
+      margin: 8px 0;
+    }
+
+    .event-item img,
+    .event-item video {
+      display: block;
+      width: 100%;
+      max-width: 300px;
+      max-height: 260px;
+      object-fit: contain;
+      margin-top: 12px;
       border-radius: 8px;
-      margin-top: 10px;
+    }
+
+    #message {
+      margin: 12px 0;
+      padding: 10px;
+      border-radius: 6px;
+      overflow-wrap: anywhere;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
-<body>
 
-  <!-- 🎬 Background Video -->
-  <video autoplay muted loop class="bg-video">
-    <source src="e3.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
+<body>
+  <video autoplay muted loop playsinline class="bg-video">
+    <source src="e3.mp4" type="video/mp4">
   </video>
+
   <div class="overlay"></div>
 
-  <div class="container">
-    <h1>🎛 Admin Panel - Manage Church Events</h1>
+  <main class="container">
+    <h1>Royal Seed Chapel — Event Manager</h1>
+
+    <p id="message" role="status"></p>
 
     <form id="addEventForm" enctype="multipart/form-data">
-      <input type="text" name="title" placeholder="Event Title" required />
-      <input type="date" name="date" required />
-      <textarea name="description" placeholder="Short Description" required></textarea>
-      <textarea name="fullDetails" placeholder="Full Details" required></textarea>
-      <input type="file" name="flyer" accept="image/*" required />
-      <input type="file" name="video" accept="video/*" />
-      <button type="submit">Add Event</button>
+      <h2>Add New Event</h2>
+
+      <input type="text" name="title"
+             placeholder="Event Title" required>
+
+      <input type="date" name="date" required>
+
+      <textarea name="description"
+                placeholder="Short Description" required></textarea>
+
+      <textarea name="fullDetails"
+                placeholder="Full Details" required></textarea>
+
+      <label for="flyer">Event Flyer (image)</label>
+      <input id="flyer" type="file" name="flyer"
+             accept="image/*" required>
+
+      <label for="video">Event Video (optional)</label>
+      <input id="video" type="file" name="video"
+             accept="video/*">
+
+      <button type="submit" id="addBtn">Add Event</button>
     </form>
 
-    <div class="event-list" id="eventList"></div>
-  </div>
+    <section class="event-list">
+      <h2>Existing Events</h2>
+      <div id="eventList">Loading events...</div>
+    </section>
+  </main>
 
   <script>
-    const API_URL = 'http://localhost:5000/api/events';
+    const API_URL = location.hostname === 'localhost' ||
+                    location.hostname === '127.0.0.1'
+      ? 'http://localhost:5000/api/events'
+      : 'https://royalsite.onrender.com/api/events';
 
-    async function loadEvents() {
-      const res = await fetch(API_URL);
-      const events = await res.json();
+    const message = document.getElementById('message');
+    const eventList = document.getElementById('eventList');
 
-      const container = document.getElementById('eventList');
-      container.innerHTML = '';
-      events.forEach(evt => {
-        container.innerHTML += `
-          <div class="event-item">
-            <h3>${evt.title}</h3>
-            <p><strong>Date:</strong> ${new Date(evt.date).toDateString()}</p>
-            <p>${evt.description}</p>
-            ${evt.flyer ? `<img src="${evt.flyer}" alt="Flyer" />` : ''}
-            ${evt.video ? `<video controls width="200"><source src="${evt.video}" type="video/mp4"></video>` : ''}
-            <br>
-            <button onclick="deleteEvent('${evt._id}')">🗑 Delete</button>
-          </div>
-        `;
-      });
+    function showMessage(text) {
+      message.textContent = text;
     }
 
-    document.getElementById('addEventForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.target);
+    function getAdminToken() {
+      return localStorage.getItem('adminToken');
+    }
 
-      const res = await fetch(`${API_URL}/add`, {
-        method: 'POST',
-        body: formData
-      });
+    function mediaUrl(path) {
+      if (!path) return '';
+      if (/^https?:\/\//i.test(path)) return path;
 
-      if (res.ok) {
-        alert('Event added!');
-        e.target.reset();
-        loadEvents();
+      const serverBase = new URL(API_URL).origin;
+      return serverBase + (path.startsWith('/') ? path : '/' + path);
+    }
+
+    async function loadEvents() {
+      eventList.textContent = 'Loading events...';
+
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) throw new Error('Could not load events.');
+
+        const events = await res.json();
+        eventList.replaceChildren();
+
+        if (!events.length) {
+          eventList.textContent = 'No events have been added yet.';
+          return;
+        }
+
+        events.forEach(evt => {
+          const item = document.createElement('article');
+          item.className = 'event-item';
+
+          const title = document.createElement('h3');
+          title.textContent = evt.title || 'Untitled event';
+          item.appendChild(title);
+
+          const date = document.createElement('p');
+          date.textContent = 'Date: ' +
+            (evt.date ? new Date(evt.date).toDateString() : 'Not set');
+          item.appendChild(date);
+
+          const description = document.createElement('p');
+          description.textContent = evt.description || '';
+          item.appendChild(description);
+
+          if (evt.flyer) {
+            const img = document.createElement('img');
+            img.src = mediaUrl(evt.flyer);
+            img.alt = 'Event flyer';
+            img.loading = 'lazy';
+            item.appendChild(img);
+          }
+
+          if (evt.video) {
+            const video = document.createElement('video');
+            video.controls = true;
+            video.preload = 'metadata';
+
+            const source = document.createElement('source');
+            source.src = mediaUrl(evt.video);
+            source.type = 'video/mp4';
+
+            video.appendChild(source);
+            item.appendChild(video);
+          }
+
+          const deleteButton = document.createElement('button');
+          deleteButton.className = 'delete-btn';
+          deleteButton.textContent = '🗑 Delete Event';
+          deleteButton.addEventListener('click', () => deleteEvent(evt._id));
+          item.appendChild(deleteButton);
+
+          eventList.appendChild(item);
+        });
+      } catch (error) {
+        eventList.textContent = error.message;
       }
-    });
+    }
+
+    document.getElementById('addEventForm').addEventListener('submit',
+      async function (e) {
+        e.preventDefault();
+
+        const addBtn = document.getElementById('addBtn');
+        addBtn.disabled = true;
+
+        try {
+          const res = await fetch(API_URL + '/add', {
+            method: 'POST',
+            body: new FormData(e.target)
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            throw new Error(data.message || 'Failed to add event.');
+          }
+
+          showMessage('Event added successfully.');
+          e.target.reset();
+          await loadEvents();
+        } catch (error) {
+          showMessage(error.message);
+        } finally {
+          addBtn.disabled = false;
+        }
+      }
+    );
 
     async function deleteEvent(id) {
-      if (confirm('Are you sure?')) {
-        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        loadEvents();
+      const token = getAdminToken();
+
+      if (!token) {
+        showMessage('Please log in as an admin before deleting events.');
+        return;
+      }
+
+      if (!confirm('Are you sure you want to permanently delete this event?')) {
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/${encodeURIComponent(id)}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || 'Could not delete event.');
+        }
+
+        showMessage('Event deleted successfully.');
+        await loadEvents();
+      } catch (error) {
+        showMessage(error.message);
       }
     }
 
@@ -169,3 +331,4 @@
   </script>
 </body>
 </html>
+```
