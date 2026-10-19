@@ -2,84 +2,135 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const mongoose = require('mongoose');
 const Event = require('../models/Event');
 
-// Storage for flyer
-const flyerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/flyers');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-flyer' + path.extname(file.originalname));
-  }
-});
+// Connect this middleware to your actual admin login/token verification.
+const verifyAdmin = (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-// Storage for video
-const videoStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/videos');
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + '-video' + path.extname(file.originalname));
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({
+      message: 'Admin login required'
+    });
   }
-});
 
-// Configure upload handler
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      if (file.fieldname === 'flyer') cb(null, 'uploads/flyers');
-      else if (file.fieldname === 'video') cb(null, 'uploads/videos');
-    },
-    filename: (req, file, cb) => {
-      cb(null, Date.now() + '-' + file.fieldname + path.extname(file.originalname));
+  // IMPORTANT:
+  // Replace this placeholder with verification using the same
+  // JWT secret and admin checks as your existing admin login.
+  return res.status(401).json({
+    message: 'Connect this route to your existing admin token verification'
+  });
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    if (file.fieldname === 'flyer') {
+      cb(null, 'uploads/flyers');
+    } else if (file.fieldname === 'video') {
+      cb(null, 'uploads/videos');
+    } else {
+      cb(new Error('Unsupported upload field'));
     }
-  })
-});
-
-// ✅ Add event
-router.post('/add', upload.fields([{ name: 'flyer' }, { name: 'video' }]), async (req, res) => {
-  try {
-    const { title, date, description, fullDetails } = req.body;
-    const flyer = req.files.flyer ? '/uploads/flyers/' + req.files.flyer[0].filename : '';
-    const video = req.files.video ? '/uploads/videos/' + req.files.video[0].filename : '';
-
-    const event = new Event({ title, date, description, fullDetails, flyer, video });
-    await event.save();
-    res.status(201).json({ message: 'Event created', event });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Failed to create event' });
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.fieldname +
+      path.extname(file.originalname));
   }
 });
 
-// ✅ Get all events
+const upload = multer({ storage });
+
+router.post(
+  '/add',
+  upload.fields([
+    { name: 'flyer', maxCount: 1 },
+    { name: 'video', maxCount: 1 }
+  ]),
+  async (req, res) => {
+    try {
+      const { title, date, description, fullDetails } = req.body;
+
+      if (!title || !date) {
+        return res.status(400).json({
+          message: 'Title and date are required'
+        });
+      }
+
+      const flyer = req.files?.flyer?.[0]
+        ? '/uploads/flyers/' + req.files.flyer[0].filename
+        : '';
+
+      const video = req.files?.video?.[0]
+        ? '/uploads/videos/' + req.files.video[0].filename
+        : '';
+
+      const event = await Event.create({
+        title,
+        date,
+        description,
+        fullDetails,
+        flyer,
+        video
+      });
+
+      res.status(201).json({
+        message: 'Event created',
+        event
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({
+        message: 'Failed to create event'
+      });
+    }
+  }
+);
+
 router.get('/', async (req, res) => {
   try {
     const events = await Event.find().sort({ date: 1 });
     res.json(events);
   } catch (err) {
-    res.status(500).json({ message: 'Error fetching events' });
+    res.status(500).json({
+      message: 'Error fetching events'
+    });
   }
 });
 
-// ✅ Get single event by ID
 router.get('/:id', async (req, res) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid event ID' });
+    }
+
     const event = await Event.findById(req.params.id);
-    if (!event) return res.status(404).json({ message: 'Event not found' });
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
     res.json(event);
   } catch (err) {
     res.status(500).json({ message: 'Server error' });
   }
 });
 
-// ✅ Delete an event
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyAdmin, async (req, res) => {
   try {
-    await Event.findByIdAndDelete(req.params.id);
-    res.json({ message: 'Event deleted' });
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid event ID' });
+    }
+
+    const event = await Event.findByIdAndDelete(req.params.id);
+
+    if (!event) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    res.json({ message: 'Event deleted successfully' });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Error deleting event' });
   }
 });
