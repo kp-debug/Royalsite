@@ -1,136 +1,929 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Youth Events | Royal Seed Chapel</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Church Events | Royal Seed Chapel International</title>
+  <meta name="description" content="Discover upcoming events, church announcements, flyers and videos from Royal Seed Chapel International.">
+
   <style>
+    :root {
+      --black: #111111;
+      --dark: #202020;
+      --white: #ffffff;
+      --paper: #f6f6f6;
+      --muted: #777777;
+      --border: #e4e4e4;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    body, html {
-      height: 100%;
-      font-family: 'Poppins', sans-serif;
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--paper);
+      color: var(--black);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .topbar {
+      background: var(--black);
+      color: var(--white);
+      padding: 12px 6%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      font-size: 13px;
+    }
+
+    .topbar a {
+      text-decoration: none;
       color: white;
-      overflow-x: hidden;
     }
 
-    video.bg-video {
-      position: fixed;
-      top: 0;
-      left: 0;
-      min-width: 100%;
-      min-height: 100%;
-      object-fit: cover;
-      z-index: -1;
+    .masthead {
+      background: white;
+      padding: 24px 6%;
+      border-bottom: 1px solid var(--border);
     }
 
-    .overlay {
-      background: rgba(0, 0, 0, 0.7);
-      height: 100%;
-      width: 100%;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 0;
+    .masthead-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 25px;
     }
 
-    .content {
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      width: 49px;
+      height: 49px;
+      display: grid;
+      place-items: center;
+      background: var(--black);
+      color: white;
+      border-radius: 50%;
+      font-family: Georgia, serif;
+      font-size: 25px;
+      flex-shrink: 0;
+    }
+
+    .brand-name {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: bold;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    .brand-name small {
+      display: block;
+      font-family: Arial, sans-serif;
+      font-size: 10px;
+      font-weight: normal;
+      letter-spacing: 2px;
+      margin-top: 5px;
+    }
+
+    .navigation {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .navigation a {
+      font-size: 13px;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .navigation a:hover {
+      text-decoration: underline;
+    }
+
+    .page-intro {
+      background: var(--black);
+      color: white;
+      padding: 65px 6% 60px;
+    }
+
+    .intro-inner {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #c9c9c9;
+    }
+
+    .page-intro h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(36px, 5vw, 62px);
+      line-height: 1.12;
+      margin: 15px 0;
+      max-width: 760px;
+    }
+
+    .page-intro p {
+      color: #d0d0d0;
+      max-width: 650px;
+      font-size: 16px;
+    }
+
+    .intro-line {
+      width: 55px;
+      height: 4px;
+      background: white;
+      margin-top: 25px;
+    }
+
+    .main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 50px 24px 75px;
+    }
+
+    .section-heading {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+
+    .section-heading h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      line-height: 1.2;
+    }
+
+    .section-heading p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 7px;
+    }
+
+    .search-box {
+      width: 260px;
+      max-width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      background: white;
+      color: var(--black);
+      outline-offset: 3px;
+    }
+
+    .event-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 30px;
+    }
+
+    .event-card {
+      background: white;
+      border: 1px solid var(--border);
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .event-card:hover {
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.07);
+      transform: translateY(-3px);
+    }
+
+    .event-media {
       position: relative;
-      z-index: 2;
-      padding: 60px 20px;
+      background: #e7e7e7;
+      overflow: hidden;
+    }
+
+    .event-media img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: contain;
+      background: #ededed;
+    }
+
+    .event-media .no-flyer {
+      aspect-ratio: 16 / 10;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 25px;
+      background: #eaeaea;
+      color: #555;
+    }
+
+    .no-flyer strong {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 27px;
+      color: #222;
+    }
+
+    .event-content {
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .event-label {
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 2px;
+      font-weight: bold;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .event-content h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 26px;
+      line-height: 1.25;
+      overflow-wrap: anywhere;
+      margin-bottom: 12px;
+    }
+
+    .event-date {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
+      margin: 0 0 15px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .date-square {
+      min-width: 43px;
+      height: 43px;
+      background: var(--black);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.1;
+    }
+
+    .date-square .day {
+      font-size: 19px;
+      font-weight: bold;
+    }
+
+    .date-square .month {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .event-description {
+      font-size: 14px;
+      color: #555;
+      overflow-wrap: anywhere;
+      margin-bottom: 20px;
+      white-space: pre-line;
+    }
+
+    .event-video {
+      width: 100%;
+      display: block;
+      background: black;
+      margin: 0 0 20px;
+      max-height: 420px;
+    }
+
+    .event-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: auto;
+      padding-top: 5px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 15px;
+      border: 1px solid var(--black);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--black);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #383838;
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--black);
+    }
+
+    .btn-outline:hover {
+      background: #eeeeee;
+    }
+
+    .status {
+      padding: 35px 20px;
+      text-align: center;
+      background: white;
+      border: 1px solid var(--border);
+      color: #555;
+      grid-column: 1 / -1;
+    }
+
+    .status h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      color: var(--black);
+      margin-bottom: 8px;
+    }
+
+    .status p {
+      font-size: 14px;
+    }
+
+    .footer {
+      background: var(--black);
+      color: white;
+      padding: 35px 6%;
       text-align: center;
     }
 
-    h1 {
-      font-size: 3rem;
-      font-weight: bold;
-      margin-bottom: 30px;
-      color: #fff;
-      text-shadow: 2px 2px 4px #000;
+    .footer p {
+      font-size: 12px;
+      color: #c6c6c6;
+      margin: 5px 0;
     }
 
-    #calendar {
-      max-width: 900px;
-      margin: 0 auto;
-      background-color: rgba(255, 255, 255, 0.12);
-      padding: 20px;
-      border-radius: 20px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(12px);
+    .footer a {
+      color: white;
     }
 
-    @media screen and (max-width: 768px) {
-      h1 {
-        font-size: 2rem;
+    @media (max-width: 760px) {
+      .topbar {
+        padding: 12px 5%;
       }
 
-      #calendar {
-        width: 95%;
+      .masthead {
+        padding: 18px 5%;
+      }
+
+      .masthead-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .navigation {
+        gap: 15px;
+      }
+
+      .page-intro {
+        padding: 45px 5%;
+      }
+
+      .main {
+        padding: 35px 16px 55px;
+      }
+
+      .event-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .section-heading {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .search-box {
+        width: 100%;
+      }
+
+      .event-content {
+        padding: 20px;
+      }
+
+      .event-content h3 {
+        font-size: 23px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
       }
     }
   </style>
 </head>
+
 <body>
 
-  <!-- 🎬 Background Video -->
-  <video autoplay muted loop class="bg-video">
-    <source src="e2.mp4" type="video/mp4" />
-    Your browser does not support the video tag.
-  </video>
-
-  <div class="overlay"></div>
-
-  <div class="content">
-    <h1>🎉 Upcoming Youth & Church Events</h1>
-    <div id="calendar"></div>
+  <div class="topbar">
+    <span>ROYAL SEED CHAPEL INTERNATIONAL</span>
+    <a href="royal.html">← Back to Home</a>
   </div>
 
-  <!-- FullCalendar & Fetch Logic -->
-  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+  <header class="masthead">
+    <div class="masthead-inner">
+
+      <a class="brand" href="royal.html" aria-label="Royal Seed Chapel home">
+        <span class="brand-mark">R</span>
+        <span class="brand-name">
+          ROYAL SEED CHAPEL
+          <small>INTERNATIONAL</small>
+        </span>
+      </a>
+
+      <nav class="navigation" aria-label="Main navigation">
+        <a href="royal.html">HOME</a>
+        <a href="services.html">SERVICES</a>
+        <a href="pictures.html">GALLERY</a>
+        <a href="contacts.html">CONTACT</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <section class="page-intro">
+    <div class="intro-inner">
+      <div class="eyebrow">Church News &amp; Announcements</div>
+
+      <h1>What's Happening at Royal Seed?</h1>
+
+      <p>
+        Stay connected with our church family. Discover upcoming events,
+        explore event flyers, watch videos and set reminders for the
+        programmes you don't want to miss.
+      </p>
+
+      <div class="intro-line"></div>
+    </div>
+  </section>
+
+  <main class="main">
+
+    <section aria-labelledby="eventsHeading">
+      <div class="section-heading">
+        <div>
+          <h2 id="eventsHeading">Latest Announcements</h2>
+          <p id="eventCount">Loading church announcements...</p>
+        </div>
+
+        <input
+          class="search-box"
+          type="search"
+          id="eventSearch"
+          placeholder="Search events..."
+          aria-label="Search church events"
+        >
+      </div>
+
+      <div class="event-grid" id="eventGrid" aria-live="polite">
+        <div class="status">
+          <h3>Loading announcements</h3>
+          <p>Please wait while we get the latest church events.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p><strong>Royal Seed Chapel International</strong></p>
+    <p>Beside Happy Home, opposite Absa Bank, Accra, Ghana.</p>
+    <p>&copy; <span id="currentYear"></span> Royal Seed Chapel International. All rights reserved.</p>
+  </footer>
+
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const calendarEl = document.getElementById('calendar');
+    document.addEventListener("DOMContentLoaded", () => {
+      const API_BASE = location.hostname === "localhost"
+        ? "http://localhost:5000"
+        : "https://royalsite.onrender.com";
 
-      // 🔁 Automatically switch between local and live
-      const API_BASE = location.hostname === 'localhost'
-        ? 'http://localhost:5000'
-        : 'https://royalsite.onrender.com';
+      const eventGrid = document.getElementById("eventGrid");
+      const eventCount = document.getElementById("eventCount");
+      const searchInput = document.getElementById("eventSearch");
 
-      try {
-        const res = await fetch(`${API_BASE}/api/events`);
-        const events = await res.json();
+      let allEvents = [];
 
-        const formattedEvents = events.map(event => ({
-          id: event._id,
-          title: event.title,
-          start: event.date,
-          extendedProps: {
-            description: event.description,
-            flyer: event.flyer,
-            video: event.video,
-            fullDetails: event.fullDetails
+      document.getElementById("currentYear").textContent =
+        new Date().getFullYear();
+
+      // Handles both absolute media URLs and existing /uploads/... paths.
+      function mediaUrl(value) {
+        if (!value || typeof value !== "string") return "";
+
+        const url = value.trim();
+
+        if (/^https?:\/\//i.test(url)) {
+          try {
+            const parsed = new URL(url);
+            if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+              return parsed.href;
+            }
+          } catch (_) {
+            return "";
           }
-        }));
 
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          events: formattedEvents,
-          eventClick: function(info) {
-            const id = info.event.id;
-            window.location.href = `event-details.html?id=${id}`;
+          return "";
+        }
+
+        if (url.startsWith("/")) {
+          return API_BASE + url;
+        }
+
+        // Reject other relative paths so unexpected values cannot be
+        // interpreted as links to pages or scripts.
+        return "";
+      }
+
+      function makeElement(tag, className, text) {
+        const element = document.createElement(tag);
+
+        if (className) element.className = className;
+        if (text !== undefined) element.textContent = text;
+
+        return element;
+      }
+
+      function formatDate(value) {
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+          return "Date to be announced";
+        }
+
+        return new Intl.DateTimeFormat("en-GH", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        }).format(date);
+      }
+
+      function formatDateParts(value) {
+        const date = new Date(value);
+
+        if (Number.isNaN(date.getTime())) {
+          return { day: "--", month: "TBA" };
+        }
+
+        return {
+          day: date.toLocaleDateString("en-GH", { day: "2-digit" }),
+          month: date.toLocaleDateString("en-GH", { month: "short" })
+        };
+      }
+
+      function escapeICS(value) {
+        return String(value || "")
+          .replace(/\\/g, "\\\\")
+          .replace(/\r?\n/g, "\\n")
+          .replace(/,/g, "\\,")
+          .replace(/;/g, "\\;");
+      }
+
+      function toICSDate(date) {
+        return date.toISOString()
+          .replace(/[-:]/g, "")
+          .replace(/\.\d{3}/, "");
+      }
+
+      function downloadReminder(event) {
+        const start = new Date(event.date);
+
+        if (Number.isNaN(start.getTime())) {
+          alert("This event does not have a valid date yet.");
+          return;
+        }
+
+        if (start.getTime() <= Date.now()) {
+          alert("This event has already started or passed.");
+          return;
+        }
+
+        // The existing database stores a date, but no event end time.
+        // Use a one-hour calendar entry until the admin system stores an end time.
+        const end = new Date(start.getTime() + 60 * 60 * 1000);
+        const uid = String(event._id || Date.now()) + "@royalseedchapel";
+
+        const description = [
+          event.description || "",
+          event.fullDetails || "",
+          "Royal Seed Chapel International"
+        ].filter(Boolean).join("\n\n");
+
+        const lines = [
+          "BEGIN:VCALENDAR",
+          "VERSION:2.0",
+          "PRODID:-//Royal Seed Chapel International//Events//EN",
+          "CALSCALE:GREGORIAN",
+          "METHOD:PUBLISH",
+          "BEGIN:VEVENT",
+          "UID:" + escapeICS(uid),
+          "DTSTAMP:" + toICSDate(new Date()),
+          "DTSTART:" + toICSDate(start),
+          "DTEND:" + toICSDate(end),
+          "SUMMARY:" + escapeICS(event.title || "Church Event"),
+          "DESCRIPTION:" + escapeICS(description),
+          "BEGIN:VALARM",
+          "TRIGGER:-PT1H",
+          "ACTION:DISPLAY",
+          "DESCRIPTION:Church event reminder",
+          "END:VALARM",
+          "END:VEVENT",
+          "END:VCALENDAR"
+        ];
+
+        const blob = new Blob(
+          [lines.join("\r\n")],
+          { type: "text/calendar;charset=utf-8" }
+        );
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = "royal-seed-event-" +
+          String(event.title || "event")
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "") +
+          ".ics";
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+
+      function createEventCard(event) {
+        const card = makeElement("article", "event-card");
+        const media = makeElement("div", "event-media");
+
+        if (event.flyer) {
+          const flyerUrl = mediaUrl(event.flyer);
+
+          if (flyerUrl) {
+            const image = makeElement("img");
+            image.src = flyerUrl;
+            image.alt = "Flyer for " + (event.title || "church event");
+            image.loading = "lazy";
+
+            image.addEventListener("error", () => {
+              const placeholder = makeElement("div", "no-flyer");
+              const label = makeElement("div");
+              label.appendChild(
+                makeElement("strong", "", "Royal Seed Chapel")
+              );
+              label.appendChild(
+                makeElement("span", "", "Flyer currently unavailable")
+              );
+              placeholder.appendChild(label);
+              media.replaceChildren(placeholder);
+            });
+
+            media.appendChild(image);
+          } else {
+            media.appendChild(makePlaceholder());
           }
+        } else {
+          media.appendChild(makePlaceholder());
+        }
+
+        function makePlaceholder() {
+          const placeholder = makeElement("div", "no-flyer");
+          const label = makeElement("div");
+          label.appendChild(
+            makeElement("strong", "", "Royal Seed Chapel")
+          );
+          label.appendChild(
+            makeElement("span", "", "Church Event Announcement")
+          );
+          placeholder.appendChild(label);
+          return placeholder;
+        }
+
+        card.appendChild(media);
+
+        const content = makeElement("div", "event-content");
+
+        content.appendChild(
+          makeElement("div", "event-label", "Church Announcement")
+        );
+
+        content.appendChild(
+          makeElement("h3", "", event.title || "Church Event")
+        );
+
+        const dateRow = makeElement("div", "event-date");
+        const parts = formatDateParts(event.date);
+        const dateSquare = makeElement("div", "date-square");
+
+        dateSquare.appendChild(makeElement("span", "day", parts.day));
+        dateSquare.appendChild(makeElement("span", "month", parts.month));
+
+        dateRow.appendChild(dateSquare);
+        dateRow.appendChild(
+          makeElement("span", "", formatDate(event.date))
+        );
+
+        content.appendChild(dateRow);
+
+        if (event.description) {
+          content.appendChild(
+            makeElement("p", "event-description", event.description)
+          );
+        }
+
+        const videoUrl = mediaUrl(event.video);
+
+        if (videoUrl) {
+          const video = makeElement("video", "event-video");
+          video.controls = true;
+          video.preload = "metadata";
+          video.playsInline = true;
+
+          const source = makeElement("source");
+          source.src = videoUrl;
+          video.appendChild(source);
+
+          video.appendChild(
+            document.createTextNode("Your browser cannot play this video.")
+          );
+
+          content.appendChild(video);
+        }
+
+        const actions = makeElement("div", "event-actions");
+
+        const detailsLink = makeElement("a", "btn btn-primary", "Read Full Details");
+        detailsLink.href =
+          "event-details.html?id=" + encodeURIComponent(String(event._id || ""));
+
+        actions.appendChild(detailsLink);
+
+        const reminderButton = makeElement(
+          "button",
+          "btn btn-outline",
+          "＋ Set Reminder"
+        );
+
+        reminderButton.type = "button";
+        reminderButton.addEventListener("click", () => {
+          downloadReminder(event);
         });
 
-        calendar.render();
-      } catch (err) {
-        console.error('Error loading events:', err);
-        calendarEl.innerHTML = "<p style='color: red;'>Failed to load events. Please try again later.</p>";
+        actions.appendChild(reminderButton);
+        content.appendChild(actions);
+        card.appendChild(content);
+
+        return card;
       }
+
+      function renderEvents(events) {
+        eventGrid.replaceChildren();
+
+        const query = searchInput.value.trim().toLowerCase();
+
+        const filtered = events.filter(event => {
+          const searchableText = [
+            event.title,
+            event.description,
+            event.fullDetails
+          ].filter(Boolean).join(" ").toLowerCase();
+
+          return searchableText.includes(query);
+        });
+
+        eventCount.textContent = filtered.length === 1
+          ? "1 announcement"
+          : filtered.length + " announcements";
+
+        if (!filtered.length) {
+          const status = makeElement("div", "status");
+          status.appendChild(
+            makeElement("h3", "", query
+              ? "No matching announcements"
+              : "No announcements yet")
+          );
+          status.appendChild(
+            makeElement("p", "", query
+              ? "Try another search term."
+              : "Please check back soon for upcoming church programmes.")
+          );
+          eventGrid.appendChild(status);
+          return;
+        }
+
+        filtered.forEach(event => {
+          eventGrid.appendChild(createEventCard(event));
+        });
+      }
+
+      async function loadEvents() {
+        try {
+          const response = await fetch(API_BASE + "/api/events");
+
+          if (!response.ok) {
+            throw new Error("The events service returned an error.");
+          }
+
+          const data = await response.json();
+
+          if (!Array.isArray(data)) {
+            throw new Error("Unexpected events response.");
+          }
+
+          // Show the newest published announcements first.
+          allEvents = data.sort((a, b) => {
+            const dateA = new Date(a.date).getTime() || 0;
+            const dateB = new Date(b.date).getTime() || 0;
+            return dateB - dateA;
+          });
+
+          renderEvents(allEvents);
+        } catch (error) {
+          console.error("Unable to load church events:", error);
+
+          eventCount.textContent = "Announcements unavailable";
+
+          const status = makeElement("div", "status");
+          status.appendChild(
+            makeElement("h3", "", "We couldn't load the announcements")
+          );
+          status.appendChild(
+            makeElement(
+              "p",
+              "",
+              "Please try again shortly. If the problem continues, the website server may be unavailable."
+            )
+          );
+
+          const retry = makeElement("button", "btn btn-primary", "Try Again");
+          retry.type = "button";
+          retry.addEventListener("click", loadEvents);
+          status.appendChild(retry);
+
+          eventGrid.replaceChildren(status);
+        }
+      }
+
+      searchInput.addEventListener("input", () => {
+        renderEvents(allEvents);
+      });
+
+      loadEvents();
     });
   </script>
+
 </body>
 </html>
