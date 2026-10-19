@@ -3,232 +3,1255 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Royal Seed Chapel ERP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080808">
+  <title>Royal Seed Chapel International | Raising Kingdom Generations</title>
+
   <style>
+    :root {
+      --gold: #d6ad4b;
+      --gold-light: #f4d783;
+      --black: #080808;
+      --dark: #111111;
+      --muted: #bdbdbd;
+      --white: #ffffff;
+    }
+
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    body, html {
-      height: 100%;
-      font-family: 'Segoe UI', sans-serif;
-      color: white;
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: var(--black);
+      color: var(--white);
+      line-height: 1.6;
       overflow-x: hidden;
     }
 
-    .bg-video {
-      position: fixed;
-      right: 0;
-      bottom: 0;
-      min-width: 100%;
-      min-height: 100%;
-      z-index: -1;
-      object-fit: cover;
+    a {
+      text-decoration: none;
+      color: inherit;
     }
 
-    .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 0;
+    button, input {
+      font: inherit;
     }
+
+    /* NAVIGATION */
 
     header {
-      padding: 20px;
-      text-align: center;
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(7, 7, 7, 0.97);
+      border-bottom: 1px solid rgba(214, 173, 75, 0.5);
       position: relative;
-      z-index: 2;
+      z-index: 10;
     }
 
-    header h1 {
-      font-size: 3em;
-      font-weight: 900;
-      background: linear-gradient(to right, #ffcc00, #ff3366, #00ccff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-      animation: pop 1s ease-out;
+    .navbar {
+      max-width: 1400px;
+      min-height: 88px;
+      padding: 15px 5%;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 30px;
     }
 
-    @keyframes pop {
-      0% { transform: scale(0.8); opacity: 0; }
-      100% { transform: scale(1); opacity: 1; }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      flex-shrink: 0;
+    }
+
+    .logo-placeholder {
+      width: 54px;
+      height: 54px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--gold);
+      font-family: Georgia, serif;
+      font-size: 31px;
+      font-weight: bold;
+    }
+
+    .brand-name {
+      color: var(--gold);
+      font-family: Georgia, serif;
+      font-size: 20px;
+      line-height: 1.15;
+      font-weight: bold;
+    }
+
+    .brand-name span {
+      display: block;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 9px;
+      letter-spacing: 2px;
+      margin-top: 6px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 22px;
     }
 
     nav a {
-      color: #fff;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: color 0.3s ease;
+      font-size: 11px;
+      font-weight: 700;
+      color: #eeeeee;
+      transition: color 0.25s;
+      white-space: nowrap;
     }
 
-    nav a:hover {
-      color: #00ffcc;
+    nav a:hover,
+    nav a.active {
+      color: var(--gold);
     }
 
-    main {
+    nav a.active::after {
+      content: "";
+      display: block;
+      height: 2px;
+      background: var(--gold);
+      margin-top: 7px;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: transparent;
+      border: 1px solid #555;
+      color: var(--gold);
+      padding: 7px 12px;
+      cursor: pointer;
+      font-size: 23px;
+    }
+
+    /* HERO */
+
+    .hero {
+      min-height: 590px;
+      position: relative;
       display: flex;
-      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      background-color: #17120a;
+      background-image:
+        linear-gradient(
+          90deg,
+          rgba(0, 0, 0, 0.94) 0%,
+          rgba(0, 0, 0, 0.79) 36%,
+          rgba(0, 0, 0, 0.18) 100%
+        ),
+        url("church-banner.png");
+      background-position: center, center 35%;
+      background-size: cover;
+      background-repeat: no-repeat;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(
+        0deg,
+        rgba(8, 8, 8, 0.85),
+        transparent 30%,
+        transparent 80%,
+        rgba(0, 0, 0, 0.2)
+      );
+    }
+
+    .hero-content {
+      width: 100%;
+      max-width: 1400px;
+      margin: auto;
+      padding: 75px 7% 125px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 5px;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      max-width: 690px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(39px, 5.5vw, 76px);
+      line-height: 1.05;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    .hero h1 span {
+      display: block;
+      color: var(--gold);
+    }
+
+    .hero-subtitle {
+      font-family: Georgia, serif;
+      font-size: clamp(16px, 2vw, 24px);
+      letter-spacing: 2px;
+      margin-bottom: 23px;
+    }
+
+    .hero-description {
+      max-width: 470px;
+      font-size: 15px;
+      color: #dedede;
+      margin-bottom: 30px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .button {
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 80vh;
-      text-align: center;
-      z-index: 2;
+      gap: 12px;
+      padding: 13px 22px;
+      font-size: 12px;
+      font-weight: 800;
+      border: 1px solid var(--gold);
+      transition: 0.25s;
+      cursor: pointer;
+    }
+
+    .button-gold {
+      background: var(--gold);
+      color: #111;
+    }
+
+    .button-gold:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+    }
+
+    .button-outline {
+      background: rgba(0, 0, 0, 0.45);
+      color: white;
+    }
+
+    .button-outline:hover {
+      background: var(--gold);
+      color: #111;
+    }
+
+    /* SERVICE TIMES */
+
+    .service-bar {
+      position: relative;
+      z-index: 3;
+      max-width: 1160px;
+      width: calc(100% - 60px);
+      margin: -70px auto 0;
+      background: #0a0a0a;
+      border: 1px solid rgba(214, 173, 75, 0.8);
+      display: grid;
+      grid-template-columns: 1.05fr 1fr 1fr 1fr;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+    }
+
+    .service-item {
+      padding: 25px 22px;
+      border-right: 1px solid #292929;
+    }
+
+    .service-item:last-child {
+      border-right: none;
+    }
+
+    .service-item .day {
+      color: var(--gold);
+      font-size: 11px;
+      letter-spacing: 1px;
+      font-weight: 800;
+      margin-bottom: 9px;
+    }
+
+    .service-item h3 {
+      font-size: 14px;
+      margin-bottom: 5px;
+    }
+
+    .service-item p {
+      color: #bcbcbc;
+      font-size: 12px;
+    }
+
+    .service-heading {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .service-symbol {
+      font-size: 27px;
+      color: var(--gold);
+    }
+
+    /* ABOUT */
+
+    .section {
+      padding: 100px 6%;
+    }
+
+    .section-inner {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 65px;
+      align-items: center;
+    }
+
+    .about-image {
+      min-height: 420px;
+      background:
+        linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0.12),
+          rgba(0, 0, 0, 0.12)
+        ),
+        url("church-banner.png") center / cover no-repeat;
+      border: 1px solid rgba(214, 173, 75, 0.5);
       position: relative;
     }
 
-    main h2 {
-      font-size: 2em;
-      margin-bottom: 10px;
-      text-shadow: 1px 1px 6px rgba(0,0,0,0.7);
+    .about-image::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(214, 173, 75, 0.55);
+      pointer-events: none;
     }
 
-    .btn {
-      margin-top: 20px;
-      padding: 12px 30px;
-      font-size: 1.1em;
-      border: none;
-      border-radius: 30px;
-      background: linear-gradient(to right, #00ffcc, #0099ff);
-      color: white;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .section-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(29px, 3vw, 42px);
+      line-height: 1.2;
+      margin-bottom: 18px;
     }
 
-    .btn:hover {
-      transform: scale(1.1);
-      box-shadow: 0 8px 20px rgba(0, 255, 204, 0.3);
+    .section-title span {
+      color: var(--gold);
     }
 
-    .member-check {
-      display: none;
+    .gold-line {
+      width: 55px;
+      height: 3px;
+      background: var(--gold);
+      margin: 20px 0;
+    }
+
+    .section-copy {
+      color: #bdbdbd;
+      font-size: 15px;
+      margin-bottom: 18px;
+    }
+
+    .values {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
       margin-top: 30px;
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      border-radius: 15px;
-      max-width: 400px;
-      width: 90%;
+    }
+
+    .value {
+      border-left: 2px solid var(--gold);
+      padding-left: 15px;
+    }
+
+    .value h3 {
+      color: var(--gold);
+      font-size: 13px;
+      margin-bottom: 5px;
+    }
+
+    .value p {
+      color: #bdbdbd;
+      font-size: 12px;
+    }
+
+    /* NEXT STEPS */
+
+    .next-steps {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.86), rgba(0, 0, 0, 0.91)),
+        url("church-banner.png") center / cover fixed;
+      border-top: 1px solid #292116;
+      border-bottom: 1px solid #292116;
+    }
+
+    .center-heading {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 45px;
+    }
+
+    .center-heading .gold-line {
+      margin: 20px auto;
+    }
+
+    .center-heading p {
+      color: #bdbdbd;
+      font-size: 14px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      padding: 30px 25px;
+      background: rgba(17, 17, 17, 0.92);
+      border: 1px solid #383024;
+      border-top: 3px solid var(--gold);
+      transition: transform 0.25s, border-color 0.25s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      border-color: var(--gold);
+    }
+
+    .card-icon {
+      width: 49px;
+      height: 49px;
+      border: 1px solid var(--gold);
+      display: grid;
+      place-items: center;
+      color: var(--gold);
+      font-size: 22px;
+      margin-bottom: 21px;
+    }
+
+    .card h3 {
+      font-family: Georgia, serif;
+      font-size: 21px;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #bdbdbd;
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+
+    .card a {
+      display: inline-block;
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--gold);
+      padding-bottom: 4px;
+    }
+
+    .card a:hover {
       color: white;
     }
 
-    .member-check input {
-      width: 100%;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: none;
-      font-size: 1em;
+    /* MEMBER VERIFICATION */
+
+    .member-section {
+      background: #101010;
+      text-align: center;
+      border-bottom: 1px solid #292929;
     }
 
-    .member-check button {
-      background: #00cc99;
+    .member-panel {
+      max-width: 570px;
+      margin: 35px auto 0;
+      padding: 35px;
+      background: #171717;
+      border: 1px solid #40351f;
+      text-align: left;
+    }
+
+    .member-panel h3 {
+      font-family: Georgia, serif;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+
+    .member-panel > p {
+      color: #bdbdbd;
+      font-size: 13px;
+      margin-bottom: 22px;
+    }
+
+    .member-panel label {
+      display: block;
+      font-size: 12px;
+      margin-bottom: 6px;
+      color: #e8e8e8;
+    }
+
+    .member-panel input {
+      display: block;
+      width: 100%;
+      background: #0b0b0b;
       color: white;
-      padding: 10px;
-      width: 100%;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
+      border: 1px solid #484034;
+      padding: 13px;
+      margin-bottom: 17px;
+      outline: none;
     }
 
-    .member-check button:hover {
-      background: #00b88a;
+    .member-panel input:focus {
+      border-color: var(--gold);
+    }
+
+    .member-panel button {
+      width: 100%;
     }
 
     #checkStatus {
-      color: yellow;
-      margin-top: 10px;
-      font-weight: bold;
+      font-size: 13px;
+      color: var(--gold-light);
+      margin-top: 14px;
+      overflow-wrap: anywhere;
     }
 
+    /* FOOTER */
+
     footer {
-      position: relative;
-      bottom: 0;
-      width: 100%;
+      background: #060606;
+      border-top: 2px solid var(--gold);
+    }
+
+    .footer-main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 55px 6%;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr 1fr;
+      gap: 45px;
+    }
+
+    .footer-brand {
+      font-family: Georgia, serif;
+      color: var(--gold);
+      font-size: 23px;
+      margin-bottom: 13px;
+    }
+
+    .footer-main h3 {
+      color: var(--gold);
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .footer-main p,
+    .footer-main a {
+      color: #bdbdbd;
+      font-size: 12px;
+    }
+
+    .footer-main a:hover {
+      color: var(--gold);
+    }
+
+    .footer-links {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .footer-contact p {
+      margin-bottom: 10px;
+    }
+
+    .copyright {
+      border-top: 1px solid #292929;
+      padding: 18px;
       text-align: center;
-      color: #ccc;
-      font-size: 0.9em;
-      z-index: 2;
-      padding: 10px 0;
-      background: rgba(0,0,0,0.4);
+      color: #999;
+      font-size: 11px;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 1100px) {
+      .navbar {
+        flex-wrap: wrap;
+      }
+
+      nav {
+        gap: 14px;
+      }
+
+      nav a {
+        font-size: 10px;
+      }
+
+      .service-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .service-item:nth-child(2) {
+        border-right: none;
+      }
+
+      .service-item:nth-child(-n+2) {
+        border-bottom: 1px solid #292929;
+      }
+    }
+
+    @media (max-width: 850px) {
+      .navbar {
+        min-height: 78px;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+
+      nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #090909;
+        border-top: 1px solid #332a18;
+        padding: 20px 6%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 18px;
+      }
+
+      nav.open {
+        display: flex;
+      }
+
+      nav a {
+        font-size: 12px;
+      }
+
+      .hero {
+        min-height: 540px;
+        background-position: center, 60% center;
+      }
+
+      .hero-content {
+        padding: 65px 7% 110px;
+      }
+
+      .about-grid {
+        grid-template-columns: 1fr;
+        gap: 35px;
+      }
+
+      .about-image {
+        min-height: 370px;
+      }
+
+      .cards {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .footer-main {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .brand-name {
+        font-size: 16px;
+      }
+
+      .brand-name span {
+        font-size: 8px;
+        letter-spacing: 1px;
+      }
+
+      .logo-placeholder {
+        width: 44px;
+        height: 44px;
+        font-size: 25px;
+      }
+
+      .hero {
+        min-height: 530px;
+        background-position: center, 62% center;
+      }
+
+      .hero-content {
+        padding: 55px 22px 100px;
+      }
+
+      .eyebrow {
+        letter-spacing: 3px;
+        font-size: 10px;
+      }
+
+      .hero h1 {
+        font-size: 42px;
+      }
+
+      .hero-description {
+        font-size: 13px;
+      }
+
+      .button {
+        padding: 12px 15px;
+        font-size: 11px;
+      }
+
+      .service-bar {
+        width: calc(100% - 30px);
+        margin-top: -45px;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .service-item {
+        padding: 19px 13px;
+      }
+
+      .service-item h3 {
+        font-size: 12px;
+      }
+
+      .service-item p {
+        font-size: 11px;
+      }
+
+      .section {
+        padding: 70px 22px;
+      }
+
+      .about-image {
+        min-height: 300px;
+      }
+
+      .values {
+        grid-template-columns: 1fr;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .member-panel {
+        padding: 24px 18px;
+      }
+
+      .footer-main {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 40px 24px;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <video autoplay muted loop class="bg-video">
-    <source src="royal1.mp4" type="video/mp4">
-  </video>
-
-  <div class="overlay"></div>
-
+  <!-- HEADER -->
   <header>
-    <h1>Royal Seed Chapel International</h1>
-    <nav>
-      <a href="royal.html">Home</a>
-      <a href="join.html">Join Us</a>
-      <a href="request-prayer.html">Prayer</a>
-      <a href="pictures.html">Gallery</a>
-      <a href="contacts.html">Contacts</a>
-      <a href="services.html">Services</a>
-      <a href="admin/login.html">Admin login</a>
-    </nav>
+    <div class="navbar">
+
+      <a href="royal.html" class="brand">
+        <!-- Replace this placeholder with your official church logo -->
+        <div class="logo-placeholder">R</div>
+
+        <div class="brand-name">
+          ROYAL SEED
+          <span>CHAPEL INTERNATIONAL</span>
+        </div>
+      </a>
+
+      <button
+        class="menu-toggle"
+        id="menuToggle"
+        aria-label="Toggle navigation"
+        aria-expanded="false">
+        ☰
+      </button>
+
+      <nav id="mainNav">
+        <a href="royal.html" class="active">HOME</a>
+        <a href="join.html">JOIN US</a>
+        <a href="request-prayer.html">PRAYER</a>
+        <a href="services.html">SERVICES</a>
+        <a href="pictures.html">GALLERY</a>
+        <a href="contacts.html">CONTACT</a>
+        <a href="admin/login.html">ADMIN</a>
+      </nav>
+
+    </div>
   </header>
 
-  <main>
-    <h2>Welcome to Royal Seed Chapel</h2>
-    <p>Experience the love of Christ and be part of a growing church family.</p>
-    <a href="join.html" class="btn">Join Us</a>
+  <!-- HERO BANNER -->
+  <section class="hero">
+    <div class="hero-content">
 
-    <button class="btn" onclick="document.getElementById('memberBox').style.display='block'">Already a Member</button>
+      <div class="eyebrow">Welcome to Royal Seed</div>
 
-    <!-- Verification Form -->
-    <div id="memberBox" class="member-check">
-      <h3>Verify Your Details</h3>
-      <input type="text" id="checkName" placeholder="Enter your full name">
-      <input type="text" id="checkPhone" placeholder="Enter your phone number">
-      <button onclick="verifyMember()">Continue</button>
-      <p id="checkStatus"></p>
+      <h1>
+        Raising
+        <span>Kingdom Generations</span>
+      </h1>
+
+      <div class="hero-subtitle">
+        ROYAL SEED CHAPEL INTERNATIONAL
+      </div>
+
+      <p class="hero-description">
+        A place of worship, transformation and purpose.
+        Experience the love of Christ, grow in God's Word
+        and become part of a growing church family.
+      </p>
+
+      <div class="hero-buttons">
+        <a href="join.html" class="button button-gold">
+          JOIN OUR FAMILY <span>→</span>
+        </a>
+
+        <a href="sermonss.html" class="button button-outline">
+          ▶ WATCH SERMONS
+        </a>
+      </div>
+
     </div>
-  </main>
+  </section>
+
+  <!-- SERVICE TIMES -->
+  <section class="service-bar">
+
+    <div class="service-item">
+      <div class="service-heading">
+        <span class="service-symbol">✦</span>
+        <div>
+          <div class="day">JOIN US</div>
+          <h3>Our Service Times</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="service-item">
+      <div class="day">SUNDAY</div>
+      <h3>8:00 AM – 10:30 AM</h3>
+      <p>Family Worship Service</p>
+    </div>
+
+    <div class="service-item">
+      <div class="day">WEDNESDAY</div>
+      <h3>6:00 PM – 8:00 PM</h3>
+      <p>Midweek Service</p>
+    </div>
+
+    <div class="service-item">
+      <div class="day">FRIDAY</div>
+      <h3>6:30 PM – 8:00 PM</h3>
+      <p>Worship and Bible Study</p>
+    </div>
+
+  </section>
+
+  <!-- ABOUT THE CHURCH -->
+  <section class="section">
+    <div class="section-inner about-grid">
+
+      <div class="about-image"
+           role="img"
+           aria-label="Royal Seed Chapel leaders">
+      </div>
+
+      <div>
+        <div class="eyebrow">Who We Are</div>
+
+        <h2 class="section-title">
+          A Church Built on Faith,
+          <span>Purpose and Love</span>
+        </h2>
+
+        <div class="gold-line"></div>
+
+        <p class="section-copy">
+          Royal Seed Chapel International is a Christ-centered
+          church committed to worship, teaching, fellowship
+          and raising a generation that impacts the world
+              through the Word of God.
+        </p>
+
+        <p class="section-copy">
+          We invite you to grow in faith, discover your
+          purpose and serve alongside a community that
+          seeks to honour Jesus Christ.
+        </p>
+
+        <div class="values">
+          <div class="value">
+            <h3>WORSHIP</h3>
+            <p>Encounter God through praise and heartfelt worship.</p>
+          </div>
+
+          <div class="value">
+            <h3>TEACHING</h3>
+            <p>Grow in the knowledge of God's Word.</p>
+          </div>
+
+          <div class="value">
+            <h3>FELLOWSHIP</h3>
+            <p>Belong to a caring and supportive church family.</p>
+          </div>
+
+          <div class="value">
+            <h3>KINGDOM IMPACT</h3>
+            <p>Share Christ's love and make a difference.</p>
+          </div>
+        </div>
+
+        <br>
+
+        <a href="services.html" class="button button-gold">
+          DISCOVER OUR CHURCH →
+        </a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CHURCH RESOURCES -->
+  <section class="section next-steps">
+    <div class="section-inner">
+
+      <div class="center-heading">
+        <div class="eyebrow">Your Next Step</div>
+        <h2 class="section-title">
+          Connect. Grow. <span>Serve.</span>
+        </h2>
+        <div class="gold-line"></div>
+        <p>
+          Explore our church resources and discover more
+          ways to participate in the life of Royal Seed Chapel.
+        </p>
+      </div>
+
+      <div class="cards">
+
+        <article class="card">
+          <div class="card-icon">📅</div>
+          <h3>Church Events</h3>
+          <p>
+            Find upcoming church programmes, special
+            gatherings and opportunities for fellowship.
+          </p>
+          <a href="events.html">EXPLORE EVENTS →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">📖</div>
+          <h3>Daily Devotional</h3>
+          <p>
+            Spend time in God's Word and find encouragement
+            for your daily walk with Christ.
+          </p>
+          <a href="daily-devotional.html">READ DEVOTIONAL →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🙏</div>
+          <h3>Prayer Requests</h3>
+          <p>
+            Share your prayer needs and connect with our
+            church prayer ministry.
+          </p>
+          <a href="request-prayer.html">REQUEST PRAYER →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🎙</div>
+          <h3>Sermons & Messages</h3>
+          <p>
+            Revisit biblical messages and be encouraged
+            through teaching from God's Word.
+          </p>
+          <a href="sermonss.html">WATCH SERMONS →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🤝</div>
+          <h3>Join a Ministry</h3>
+          <p>
+            Use your gifts, serve with others and take an
+            active role in our church family.
+          </p>
+          <a href="ministry-signup.html">BECOME A WORKER →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">📷</div>
+          <h3>Church Gallery</h3>
+          <p>
+            View moments from our services, church events
+            and community activities.
+          </p>
+          <a href="pictures.html">VIEW GALLERY →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🚌</div>
+          <h3>Church Bus</h3>
+          <p>
+            Find church transportation information to help
+            you plan your visit.
+          </p>
+          <a href="bus-info.html">BUS INFORMATION →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">💬</div>
+          <h3>Testimonies</h3>
+          <p>
+            Read stories of faith, answered prayers and
+            God's goodness in people's lives.
+          </p>
+          <a href="testimonies.html">READ TESTIMONIES →</a>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">🏠</div>
+          <h3>Join Our Family</h3>
+          <p>
+            Take the next step and connect with Royal Seed
+            Chapel International.
+          </p>
+          <a href="join.html">GET CONNECTED →</a>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- EXISTING MEMBER VERIFICATION -->
+  <section class="section member-section">
+    <div class="section-inner">
+
+      <div class="eyebrow">Member Portal</div>
+
+      <h2 class="section-title">
+        Already Part of <span>Our Family?</span>
+      </h2>
+
+      <p class="section-copy">
+        Verify your membership using your registered name
+        and phone number to continue to your welcome page.
+      </p>
+
+      <div class="member-panel">
+
+        <h3>Member Verification</h3>
+
+        <p>Enter the details you used during registration.</p>
+
+        <form id="memberForm">
+
+          <label for="checkName">Full Name</label>
+          <input
+            type="text"
+            id="checkName"
+            name="name"
+            placeholder="Enter your full name"
+            autocomplete="name"
+            required>
+
+          <label for="checkPhone">Phone Number</label>
+          <input
+            type="tel"
+            id="checkPhone"
+            name="phone"
+            placeholder="Enter your registered phone number"
+            autocomplete="tel"
+            required>
+
+          <button type="submit" class="button button-gold">
+            VERIFY MEMBERSHIP →
+          </button>
+
+          <p id="checkStatus" role="status" aria-live="polite"></p>
+
+        </form>
+      </div>
+
+      <p style="margin-top: 20px; font-size: 13px; color: #aaa;">
+        Not registered yet?
+        <a href="join.html" style="color: var(--gold);">
+          Join our church family.
+        </a>
+      </p>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+
+    <div class="footer-main">
+
+      <div>
+        <div class="footer-brand">ROYAL SEED</div>
+        <h3>CHAPEL INTERNATIONAL</h3>
+
+        <p>
+          Raising Kingdom Generations through worship,
+          teaching, fellowship and the Word of God.
+        </p>
+      </div>
+
+      <div>
+        <h3>QUICK LINKS</h3>
+
+        <div class="footer-links">
+          <a href="royal.html">Home</a>
+          <a href="join.html">Join Us</a>
+          <a href="services.html">Services</a>
+          <a href="events.html">Events</a>
+          <a href="sermonss.html">Sermons</a>
+          <a href="pictures.html">Gallery</a>
+          <a href="request-prayer.html">Prayer</a>
+          <a href="contacts.html">Contact</a>
+          <a href="ministry-signup.html">Ministries</a>
+          <a href="admin/login.html">Admin Login</a>
+        </div>
+      </div>
+
+      <div class="footer-contact">
+        <h3>VISIT OUR CHURCH</h3>
+
+        <p>Location: Beside Happy Home, opposite Absa Bank, Accra, Ghana.</p>
+
+        <p>Sunday: 8:00 AM – 10:30 AM</p>
+        <p>Wednesday: 6:00 PM – 8:00 PM</p>
+        <p>Friday: 6:30 PM – 8:00 PM</p>
+
+        <a href="contacts.html">CONTACT OUR CHURCH →</a>
+      </div>
+
+    </div>
+
+    <div class="copyright">
+      © <span id="copyrightYear">2026</span>
+      Royal Seed Chapel International. All rights reserved.
+    </div>
+
+  </footer>
 
   <script>
-    async function verifyMember() {
-      const name = document.getElementById('checkName').value.trim().toLowerCase();
-      const phone = document.getElementById('checkPhone').value.trim();
+    // Mobile navigation
+    const menuToggle = document.getElementById("menuToggle");
+    const mainNav = document.getElementById("mainNav");
+
+    menuToggle.addEventListener("click", function () {
+      const isOpen = mainNav.classList.toggle("open");
+
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+      menuToggle.textContent = isOpen ? "✕" : "☰";
+    });
+
+    mainNav.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        mainNav.classList.remove("open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.textContent = "☰";
+      });
+    });
+
+    // Copyright year
+    document.getElementById("copyrightYear").textContent =
+      new Date().getFullYear();
+
+    // Preserve the existing member verification API
+    document.getElementById("memberForm").addEventListener(
+      "submit",
+      verifyMember
+    );
+
+    async function verifyMember(event) {
+      event.preventDefault();
+
+      const nameInput = document.getElementById("checkName");
+      const phoneInput = document.getElementById("checkPhone");
+      const status = document.getElementById("checkStatus");
+      const submitButton = document.querySelector(
+        "#memberForm button[type='submit']"
+      );
+
+      const name = nameInput.value.trim();
+      const phone = phoneInput.value.trim();
 
       if (!name || !phone) {
-        document.getElementById('checkStatus').innerText = 'Please enter both name and phone number.';
+        status.textContent = "Please enter your name and phone number.";
         return;
       }
 
+      status.textContent = "Checking your membership...";
+      submitButton.disabled = true;
+      submitButton.style.opacity = "0.65";
+
       try {
-        const res = await fetch(`/api/members/phone/${phone}`);
+        const res = await fetch(
+          `/api/members/phone/${encodeURIComponent(phone)}`
+        );
+
         const data = await res.json();
 
-        if (res.ok && data.name && data.name.trim().toLowerCase() === name) {
-          localStorage.setItem('newMemberName', data.name);
-          window.location.href = 'welcome.html';
-        } else {
-          document.getElementById('checkStatus').innerText = 'No match found. Please register.';
-          setTimeout(() => window.location.href = 'join.html', 3000);
+        if (
+          res.ok &&
+          data.name &&
+          data.name.trim().toLowerCase() === name.toLowerCase()
+        ) {
+          localStorage.setItem("newMemberName", data.name);
+          window.location.href = "welcome.html";
+          return;
         }
+
+        status.textContent =
+          "No matching member was found. Please check your details or register.";
+
       } catch (err) {
-        console.error(err);
-        document.getElementById('checkStatus').innerText = 'Error contacting server.';
+        console.error("Member verification failed:", err);
+
+        status.textContent =
+          "Unable to contact the server. Please try again.";
+      } finally {
+        submitButton.disabled = false;
+        submitButton.style.opacity = "1";
       }
     }
   </script>
-
-  <footer>&copy; 2025 Royal Seed Chapel International</footer>
 
 </body>
 </html>
