@@ -2,45 +2,43 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs');
 const mongoose = require('mongoose');
 const Event = require('../models/Event');
 
-// Connect this middleware to your actual admin login/token verification.
-const verifyAdmin = (req, res, next) => {
-  const authHeader = req.headers.authorization;
+// Create upload folders if they do not exist
+const flyerFolder = path.join(__dirname, '../uploads/flyers');
+const videoFolder = path.join(__dirname, '../uploads/videos');
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({
-      message: 'Admin login required'
-    });
-  }
+fs.mkdirSync(flyerFolder, { recursive: true });
+fs.mkdirSync(videoFolder, { recursive: true });
 
-  // IMPORTANT:
-  // Replace this placeholder with verification using the same
-  // JWT secret and admin checks as your existing admin login.
-  return res.status(401).json({
-    message: 'Connect this route to your existing admin token verification'
-  });
-};
-
+// Configure uploaded file storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     if (file.fieldname === 'flyer') {
-      cb(null, 'uploads/flyers');
+      cb(null, flyerFolder);
     } else if (file.fieldname === 'video') {
-      cb(null, 'uploads/videos');
+      cb(null, videoFolder);
     } else {
       cb(new Error('Unsupported upload field'));
     }
   },
+
   filename: (req, file, cb) => {
-    cb(null, Date.now() + '-' + file.fieldname +
-      path.extname(file.originalname));
+    const extension = path.extname(file.originalname);
+    cb(null, Date.now() + '-' + file.fieldname + extension);
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 100 * 1024 * 1024
+  }
+});
 
+// ADD EVENT
 router.post(
   '/add',
   upload.fields([
@@ -74,64 +72,88 @@ router.post(
         video
       });
 
-      res.status(201).json({
-        message: 'Event created',
+      return res.status(201).json({
+        message: 'Event added successfully',
         event
       });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({
-        message: 'Failed to create event'
+    } catch (error) {
+      console.error('Error adding event:', error);
+
+      return res.status(500).json({
+        message: 'Failed to add event'
       });
     }
   }
 );
 
+// GET ALL EVENTS
 router.get('/', async (req, res) => {
   try {
     const events = await Event.find().sort({ date: 1 });
-    res.json(events);
-  } catch (err) {
-    res.status(500).json({
+    return res.json(events);
+  } catch (error) {
+    console.error('Error fetching events:', error);
+
+    return res.status(500).json({
       message: 'Error fetching events'
     });
   }
 });
 
+// GET ONE EVENT
 router.get('/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).json({ message: 'Invalid event ID' });
+      return res.status(400).json({
+        message: 'Invalid event ID'
+      });
     }
 
     const event = await Event.findById(req.params.id);
 
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({
+        message: 'Event not found'
+      });
     }
 
-    res.json(event);
-  } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    return res.json(event);
+  } catch (error) {
+    console.error('Error fetching event:', error);
+
+    return res.status(500).json({
+      message: 'Server error'
+    });
   }
 });
 
-router.delete('/:id', verifyAdmin, async (req, res) => {
+// DELETE EVENT — NO TOKEN VERIFICATION
+router.delete('/:id', async (req, res) => {
   try {
     if (!mongoose.isValidObjectId(req.params.id)) {
-      return res.status(400).json({ message: 'Invalid event ID' });
+      return res.status(400).json({
+        message: 'Invalid event ID'
+      });
     }
 
     const event = await Event.findByIdAndDelete(req.params.id);
 
     if (!event) {
-      return res.status(404).json({ message: 'Event not found' });
+      return res.status(404).json({
+        message: 'Event not found'
+      });
     }
 
-    res.json({ message: 'Event deleted successfully' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error deleting event' });
+    return res.json({
+      message: 'Event deleted successfully',
+      deletedEventId: req.params.id
+    });
+  } catch (error) {
+    console.error('Error deleting event:', error);
+
+    return res.status(500).json({
+      message: 'Error deleting event'
+    });
   }
 });
 
